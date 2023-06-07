@@ -1,216 +1,119 @@
 package com.example.szacunki.features.estimation.presentation.screens.estimation
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.Scaffold
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import com.example.szacunki.R
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
-import com.example.szacunki.features.estimation.presentation.model.TreeDisplayable
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import org.koin.androidx.compose.getViewModel
+import java.util.*
 
 
-@Destination
+@Destination(route = "EstimationScreen")
 @Composable
-fun EstimationScreen(id: Int?) {
+fun EstimationScreen(
+    id: UUID?,
+    sectionNumber: String?,
+    treeNames: Array<String>?,
+    navigator: DestinationsNavigator
+) {
+    val currentIDState = rememberSaveable { mutableStateOf(id) }
+    val treeIndexState = rememberSaveable { mutableStateOf(0) }
+    val diameterIndexState = rememberSaveable { mutableStateOf(0) }
+    val classesDialogState = rememberSaveable { mutableStateOf(false) }
+    val treeNameState = rememberSaveable { mutableStateOf(false) }
+    val memoState = rememberSaveable { mutableStateOf(false) }
 
     val viewModel = getViewModel<EstimationViewModel>()
-    if (id == null) {
-        viewModel.createNewSheet()
-    } else {
-        viewModel.onIdPassed(id)
-    }
     val estimation = viewModel.estimationFlow.collectAsState()
-    val index = remember { mutableStateOf(0) }
 
-    estimation.value?.let { estimationDisplayable ->
-        Scaffold(
-            topBar = { TreeNamesTopBar(estimationDisplayable.trees, index) },
-            bottomBar = { BottomInfoBar2(estimationDisplayable) }
 
-        ) {
-            Column(modifier = Modifier.fillMaxSize()) {
-                TitleParametersRow()
-                LazyColumnParameters(estimationDisplayable.trees, index.value)
-            }
-            it
-        }
+    LaunchedEffect(key1 = Unit) {
+        currentIDState.value?.let {
+            viewModel.onIdPassed(it)
+        } ?: viewModel.createNewSheet(
+            sectionNumber, treeNames?.toList()
+        ).also { currentIDState.value = viewModel.estimationFlow.value?.id }
     }
-}
 
-@Composable
-fun TreeNamesTopBar(treeList: List<TreeDisplayable>, index: MutableState<Int>) {
-    LazyRow(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        itemsIndexed(treeList) { itemIndex, item ->
-            Box(
-                modifier = Modifier
-                    .height(50.dp)
-                    .background(color = if (index.value == itemIndex) color2 else color1)
-                    .clickable {
-                        index.value = itemIndex
-                    }, contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = item.name,
-                    style = MaterialTheme.typography.h6,
-                    modifier = Modifier.padding(
-                        top = 5.dp,
-                        bottom = 5.dp,
-                        start = 10.dp,
-                        end = 10.dp
-                    )
+
+    if (estimation.value != null) {
+        Scaffold(
+            topBar = {
+                TreeNamesTopBar(
+                    estimation = estimation as State<EstimationDisplayable>,
+                    viewModel = viewModel,
+                    treeIndexState = treeIndexState,
+                    treeNameState = treeNameState
                 )
-            }
-        }
-        item {
-            Box(
-                modifier = Modifier
-                    .height(50.dp)
-                    .background(color = color1), contentAlignment = Alignment.Center
-            ) {
-                OutlinedButton(onClick = {
-
-                }) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_plus),
-                        contentDescription = null
+            },
+            bottomBar = {
+                BottomInfoBar(
+                    estimation = estimation as State<EstimationDisplayable>,
+                    memoState = memoState
+                )
+            },
+            content = {
+                if (classesDialogState.value) {
+                    AllTreeClassesDialog(
+                        estimation = estimation as State<EstimationDisplayable>,
+                        treeIndex = treeIndexState.value,
+                        diameterIndex = diameterIndexState.value,
+                        viewModel = viewModel,
+                        onDismissRequest = { classesDialogState.value = false },
                     )
                 }
+
+                if (treeNameState.value) {
+                    AddSingleTreeDialog(
+                        viewModel = viewModel,
+                        estimation = estimation as State<EstimationDisplayable>,
+                        onDismissRequest = { treeNameState.value = false }
+                    )
+                }
+                if (memoState.value) {
+                    MemoDialog(
+                        estimation = estimation as State<EstimationDisplayable>,
+                        viewModel = viewModel
+                    ) {
+                        memoState.value = false
+                    }
+                }
+
+                Column(modifier = Modifier.fillMaxSize()) {
+                    TitleParametersRow(index = treeIndexState.value)
+                    LazyColumnTreeParametersRow(
+                        estimation = estimation as State<EstimationDisplayable>,
+                        viewModel = viewModel,
+                        treeIndex = treeIndexState,
+                        diameterIndexState = diameterIndexState,
+                        classesDialogState = classesDialogState
+                    )
+                }
+                it
             }
-        }
-    }
-}
-
-@Composable
-fun TitleParametersRow() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(color2),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(text = "Średnica")
-        Text(text = "Liczba Drzew")
-        Text(text = "Wysokość")
-    }
-}
-
-@Composable
-fun LazyColumnParameters(treeList: List<TreeDisplayable>, index: Int) {
-    LazyColumn(
-        content = {
-            itemsIndexed(treeList[index].treeRows) { itemIndex, item ->
-                TreeParametersRow(
-                    diameter = item.diameter,
-                    classQuantity = item.treeQualityClasses.class3,
-                    height = item.height,
-                    treeList = treeList,
-                    treeIndex = index,
-                    diameterIndex = itemIndex
-                )
-            }
-        }, modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 50.dp)
-    )
-}
-
-
-@Composable
-fun TreeParametersRow(
-    diameter: String,
-    classQuantity: Int,
-    height: Int,
-    treeList: List<TreeDisplayable>,
-    treeIndex: Int,
-    diameterIndex: Int
-) {
-    val classesQuantity = remember {
-        mutableStateOf(treeList[treeIndex].treeRows[diameterIndex].treeQualityClasses.class3)
-    }
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = diameter,
-            modifier = Modifier.padding(8.dp),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.body1
         )
-        Button(onClick = { classesQuantity.value-- }) {
-            Icon(
-                imageVector = ImageVector.vectorResource(id = R.drawable.ic_minus),
-                contentDescription = null
-            )
-        }
-
-        Text(text = classesQuantity.value.toString())
-        Button(onClick = { classesQuantity.value++ }) {
-            Icon(
-                imageVector = ImageVector.vectorResource(id = R.drawable.ic_plus),
-                contentDescription = null
-            )
-        }
-        Text(text = height.toString())
-
     }
+
 }
 
-@Composable
-fun BottomInfoBar(estimation: EstimationDisplayable) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp)
-            .padding(bottom = 50.dp)
-            .background(color = color2), contentAlignment = Alignment.Center
-    ) {
-        Text(text = estimation.date.time.toString(), style = MaterialTheme.typography.h6)
-    }
-}
 
-@Composable
-fun BottomInfoBar2(estimation: EstimationDisplayable) {
-    BottomAppBar(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp),
-        backgroundColor = color2
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .background(color = color2), contentAlignment = Alignment.Center
-        ) {
-            Text(text = estimation.date.time.toString(), style = MaterialTheme.typography.h6)
-        }
-    }
-}
 
-val color1 = Color(0xff1e966e)
-val color2 = Color(0xff04704c)
-val color3 = Color(0xff2debab)
-val color4 = Color.White
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -13,8 +13,8 @@ data class EstimationCached(
     val sectionNumber: String,
     val memo: String,
     val date: Date,
-    @PrimaryKey(autoGenerate = true)
-    val id: Int
+    @PrimaryKey
+    val id: UUID
 ) {
     constructor(estimationDomain: EstimationDomain) : this(
         trees = estimationDomain.trees.map { TreeCached(it) },

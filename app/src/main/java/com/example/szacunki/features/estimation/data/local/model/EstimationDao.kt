@@ -1,22 +1,20 @@
 package com.example.szacunki.features.estimation.data.local.model
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Update
+import androidx.room.*
 import kotlinx.coroutines.flow.Flow
+import java.util.*
 
 @Dao
 interface EstimationDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveEstimationToLocal(estimation: EstimationCached)
 
     @Query("SELECT * FROM EstimationCached")
     fun getAllEstimationsFromLocal(): Flow<List<EstimationCached>>
 
     @Query("SELECT * FROM EstimationCached WHERE id = :id")
-    fun getSingleEstimationsFromLocal(id: Int): Flow<EstimationCached>
+    fun getSingleEstimationsFromLocal(id: UUID): Flow<EstimationCached>
 
     @Update
     suspend fun updateEstimation(estimation: EstimationCached)

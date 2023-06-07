@@ -6,6 +6,7 @@ import com.example.szacunki.features.estimation.domain.EstimationRepository
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.util.*
 
 class SavedEstimationsViewModel(private val estimationRepository: EstimationRepository) :
     ViewModel() {
@@ -20,7 +21,7 @@ class SavedEstimationsViewModel(private val estimationRepository: EstimationRepo
     val estimationFlow = _estimationFlow.asStateFlow()
 
 
-    fun getSingleEstimation(id: Int) {
+    fun getSingleEstimation(id: UUID) {
         viewModelScope.launch {
             val local: EstimationDisplayable =
                 estimationRepository.getSingleEstimationsFromLocal(id).first()

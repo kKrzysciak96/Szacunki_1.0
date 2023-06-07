@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import java.util.*
 
 class EstimationRepositoryImpl(private val estimationDao: EstimationDao) : EstimationRepository {
 
@@ -27,7 +28,7 @@ class EstimationRepositoryImpl(private val estimationDao: EstimationDao) : Estim
 
     }
 
-    override fun getSingleEstimationsFromLocal(id: Int): Flow<EstimationDomain> {
+    override fun getSingleEstimationsFromLocal(id: UUID): Flow<EstimationDomain> {
         return estimationDao.getSingleEstimationsFromLocal(id).map { it.toEstimationDomain() }
 
     }

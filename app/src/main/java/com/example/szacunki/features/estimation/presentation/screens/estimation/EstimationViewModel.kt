@@ -4,13 +4,14 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.szacunki.features.estimation.domain.EstimationRepository
-import com.example.szacunki.features.estimation.domain.model.EstimationDomain
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
+import com.example.szacunki.features.estimation.presentation.model.TreeDisplayable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.*
 
 class EstimationViewModel(private val estimationRepository: EstimationRepository) : ViewModel() {
 
@@ -18,7 +19,7 @@ class EstimationViewModel(private val estimationRepository: EstimationRepository
     val estimationFlow = _estimationFlow.asStateFlow()
 
 
-    fun getSingleEstimation(id: Int) {
+    private fun getSingleEstimation(id: UUID) {
         viewModelScope.launch {
             val local: EstimationDisplayable =
                 estimationRepository.getSingleEstimationsFromLocal(id).first()
@@ -32,7 +33,7 @@ class EstimationViewModel(private val estimationRepository: EstimationRepository
         Log.d("SAVE", "SAVED")
     }
 
-    fun updateEstimation(estimationDisplayable: EstimationDisplayable) {
+    private fun updateEstimationToLocal(estimationDisplayable: EstimationDisplayable) {
         viewModelScope.launch { estimationRepository.updateEstimation(estimationDisplayable.toEstimationDomain()) }
     }
 
@@ -40,12 +41,24 @@ class EstimationViewModel(private val estimationRepository: EstimationRepository
         viewModelScope.launch { estimationRepository.dropDataBase() }
     }
 
-    fun onIdPassed(id: Int) {
+    fun onIdPassed(id: UUID) {
         getSingleEstimation(id)
     }
 
-    fun createNewSheet() {
-        _estimationFlow.update { EstimationDisplayable(EstimationDomain()).also { saveToLocal(it) } }
+    fun createNewSheet(sectionNumber: String?, treeNameList: List<String>?) {
+        if (treeNameList != null) {
+            _estimationFlow.update {
+                EstimationDisplayable(
+                    sectionNumber = checkNotNull(sectionNumber),
+                    trees = treeNameList.map { TreeDisplayable(name = it) }).also {
+                    saveToLocal(it)
+                }
+            }
+        }
+    }
+
+    fun updateEstimationFlow(estimation: EstimationDisplayable) {
+        _estimationFlow.update { estimation.also { updateEstimationToLocal(it) } }
     }
 
 
