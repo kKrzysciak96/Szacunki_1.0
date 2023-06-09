@@ -78,7 +78,7 @@ fun TreeParametersRow(
     val isHeightDropdownMenuVisible = rememberSaveable { mutableStateOf(false) }
 
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxSize(),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -98,16 +98,17 @@ fun TreeParametersRow(
             buttonId = ButtonId.CLASS3,
             addMode = false
         )
-        Text(
-            text = estimation.value.trees[treeIndex].treeRows[diameterIndex].treeQualityClasses.class3.toString(),
-
-            modifier = Modifier
-                .width(50.dp)
-                .clickable {
-                    diameterIndexState.value = diameterIndex
-                    classesDialogState.value = true
-                }, textAlign = TextAlign.Center
-        )
+        Box(contentAlignment = Alignment.Center, modifier = Modifier
+            .size(50.dp)
+            .clickable {
+                diameterIndexState.value = diameterIndex
+                classesDialogState.value = true
+            }) {
+            Text(
+                text = estimation.value.trees[treeIndex].treeRows[diameterIndex].treeQualityClasses.class3.toString(),
+                textAlign = TextAlign.Center
+            )
+        }
         CustomIdButton(
             treeIndex = treeIndex,
             diameterIndex = diameterIndex,
@@ -117,30 +118,32 @@ fun TreeParametersRow(
             addMode = true,
             modifier = Modifier.padding(end = 20.dp)
         )
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.End,
-            modifier = Modifier
-                .width(50.dp)
-                .clickable {
-                    isHeightDropdownMenuVisible.value = true
-                }) {
-            Text(
-                text = estimation.value.trees[treeIndex].treeRows[diameterIndex].height.toString()
-            )
-            Icon(
-                imageVector = ImageVector.vectorResource(R.drawable.ic_dropdown_arrow),
-                contentDescription = null
-            )
-            HeightDropdownMenu(
-                isHeightDropdownMenuVisible = isHeightDropdownMenuVisible,
-                estimation = estimation,
-                viewModel = viewModel,
-                diameterIndex = diameterIndex,
-                treeIndex = treeIndex,
-                onDismiss = {
-                    isHeightDropdownMenuVisible.value = false
-                })
+        Box(contentAlignment = Alignment.Center, modifier = Modifier
+            .size(50.dp)
+            .clickable {
+                isHeightDropdownMenuVisible.value = true
+            }) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End,
+            ) {
+                Text(
+                    text = estimation.value.trees[treeIndex].treeRows[diameterIndex].height.toString()
+                )
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_dropdown_arrow),
+                    contentDescription = null
+                )
+                HeightDropdownMenu(
+                    isHeightDropdownMenuVisible = isHeightDropdownMenuVisible,
+                    estimation = estimation,
+                    viewModel = viewModel,
+                    diameterIndex = diameterIndex,
+                    treeIndex = treeIndex,
+                    onDismiss = {
+                        isHeightDropdownMenuVisible.value = false
+                    })
+            }
         }
     }
 }

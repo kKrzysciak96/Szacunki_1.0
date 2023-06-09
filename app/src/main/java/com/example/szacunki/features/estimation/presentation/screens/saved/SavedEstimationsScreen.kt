@@ -1,6 +1,5 @@
 package com.example.szacunki.features.estimation.presentation.screens.saved
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,13 +11,20 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.szacunki.R
 import com.example.szacunki.core.calculations.color1
 import com.example.szacunki.core.calculations.color2
+import com.example.szacunki.core.extensions.prepareDateToDisplay
+import com.example.szacunki.core.extensions.toLocalDateTime
+import com.example.szacunki.features.destinations.EstimationScreenDestination
+import com.example.szacunki.features.destinations.PdfViewerScreenDestination
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
-import com.example.szacunki.features.estimation.presentation.screens.destinations.EstimationScreenDestination
 import com.example.szacunki.features.pdf.creator.PdfGenerator
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -68,10 +74,16 @@ fun AllSavedEstimationsContent(
             .padding(bottom = 50.dp)
     ) {
         items(estimations.value) {
-            Row() {
-                Card(
+            Card(
+                modifier = Modifier
+                    .padding(10.dp),
+                backgroundColor = color1,
+                elevation = 10.dp,
+                shape = RoundedCornerShape(10.dp)
+            ) {
+                Row(
                     modifier = Modifier
-                        .padding(10.dp)
+                        .fillMaxWidth()
                         .clickable {
                             val id = it.id
                             val navArg = EstimationScreenDestination.NavArgs(
@@ -80,28 +92,39 @@ fun AllSavedEstimationsContent(
                                 treeNames = null
                             )
                             navigator.navigate(EstimationScreenDestination(navArg))
-
-                        }, elevation = 10.dp, shape = RoundedCornerShape(10.dp)
+                        },
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    EstimationView(name = it.sectionNumber, date = it.date)
-
-                }
-                OutlinedButton(onClick = { PdfGenerator.generatePdf(context, it) }) {
-                    Text(text = "PDF")
+                    EstimationView(
+                        name = it.sectionNumber,
+                        date = it.date,
+                        modifier = Modifier
+                    )
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_pdf),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(70.dp)
+                            .padding(end = 20.dp)
+                            .clickable {
+                                val path = PdfGenerator.generatePdf(context, it)
+                                val navArg = PdfViewerScreenDestination.NavArgs(path = path)
+                                navigator.navigate(PdfViewerScreenDestination(navArg))
+                            }
+                    )
                 }
             }
         }
-
     }
 }
 
 @Composable
-fun EstimationView(name: String, date: Date) {
+fun EstimationView(name: String, date: Date, modifier: Modifier = Modifier) {
     Column(
-        modifier = Modifier
-            .background(color1)
+        modifier = modifier, verticalArrangement = Arrangement.Center
     ) {
-        val title = "Oddział nr.: $name" + "XXX"
+        val title = "Oddział nr.: $name"
         Text(
             text = title,
             modifier = Modifier.padding(5.dp),
@@ -109,10 +132,12 @@ fun EstimationView(name: String, date: Date) {
             style = MaterialTheme.typography.h5
         )
         Text(
-            text = date.time.toString(),
+            text = date.toLocalDateTime().prepareDateToDisplay(),
             modifier = Modifier.padding(5.dp),
             textAlign = TextAlign.Start,
-            style = MaterialTheme.typography.h6
+            style = MaterialTheme.typography.h6,
+            fontStyle = FontStyle.Italic,
+            color = Color.DarkGray
         )
     }
 
@@ -128,4 +153,6 @@ fun SavedEstimationsBottomBar(viewModel: SavedEstimationsViewModel) {
         }
     }
 }
+
+
 

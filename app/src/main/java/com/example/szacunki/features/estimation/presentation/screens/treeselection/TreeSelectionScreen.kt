@@ -1,4 +1,4 @@
-package com.example.szacunki.features.estimation.presentation.screens
+package com.example.szacunki.features.estimation.presentation.screens.treeselection
 
 
 import androidx.compose.foundation.background
@@ -21,8 +21,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.szacunki.core.calculations.color1
+import com.example.szacunki.features.destinations.EstimationScreenDestination
 import com.example.szacunki.features.estimation.presentation.model.baseNameList
-import com.example.szacunki.features.estimation.presentation.screens.destinations.EstimationScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 

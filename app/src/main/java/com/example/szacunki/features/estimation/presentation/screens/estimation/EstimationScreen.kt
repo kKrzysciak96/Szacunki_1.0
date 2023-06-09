@@ -6,6 +6,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -27,6 +28,7 @@ fun EstimationScreen(
     val classesDialogState = rememberSaveable { mutableStateOf(false) }
     val treeNameState = rememberSaveable { mutableStateOf(false) }
     val memoState = rememberSaveable { mutableStateOf(false) }
+    val context = LocalContext.current
 
     val viewModel = getViewModel<EstimationViewModel>()
     val estimation = viewModel.estimationFlow.collectAsState()
@@ -54,7 +56,9 @@ fun EstimationScreen(
             bottomBar = {
                 BottomInfoBar(
                     estimation = estimation as State<EstimationDisplayable>,
-                    memoState = memoState
+                    memoState = memoState,
+                    context = context,
+                    navigator = navigator
                 )
             },
             content = {

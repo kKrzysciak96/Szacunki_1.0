@@ -9,8 +9,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.example.szacunki.features.estimation.presentation.screens.destinations.SavedEstimationsScreenDestination
-import com.example.szacunki.features.estimation.presentation.screens.destinations.SectionSelectionScreenDestination
+import com.example.szacunki.features.destinations.SavedEstimationsScreenDestination
+import com.example.szacunki.features.destinations.SectionSelectionScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator

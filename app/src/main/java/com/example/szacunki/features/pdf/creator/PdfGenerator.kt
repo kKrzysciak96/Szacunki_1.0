@@ -1,8 +1,9 @@
 package com.example.szacunki.features.pdf.creator
 
 import android.content.Context
-import android.net.Uri
 import com.example.szacunki.core.calculations.color2
+import com.example.szacunki.core.extensions.prepareDateToDisplay
+import com.example.szacunki.core.extensions.toLocalDateTime
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
 import com.example.szacunki.features.estimation.presentation.model.TreeDisplayable
 import com.itextpdf.io.font.FontProgramFactory
@@ -24,15 +25,14 @@ import java.io.FileOutputStream
 
 object PdfGenerator {
 
-    fun generatePdf(context: Context, estimation: EstimationDisplayable) {
+    fun generatePdf(context: Context, estimation: EstimationDisplayable): String {
 
-        val fileName = estimation.sectionNumber + "_" + estimation.date + ".pdf"
+        val fileName = estimation.sectionNumber + "_" + estimation.date.time.toString() + ".pdf"
         val filePath = context.filesDir
         val file = File(filePath, fileName)
 
         val fOut = FileOutputStream(file)
 
-        val uri = Uri.fromFile(file)
         val pdfWriter = PdfWriter(fOut)
         //Creating a PDF
         val pdfDocument = PdfDocument(pdfWriter)
@@ -56,7 +56,11 @@ object PdfGenerator {
         //add table
         estimation.trees.forEachIndexed { index, tree ->
             addTable(layoutDocument, tree, estimation.sectionNumber)
-            layoutDocument.add(Paragraph(estimation.date.toString()).setTextAlignment(TextAlignment.CENTER))
+            layoutDocument.add(
+                Paragraph(
+                    estimation.date.toLocalDateTime().prepareDateToDisplay()
+                ).setTextAlignment(TextAlignment.CENTER)
+            )
             if (index != estimation.trees.lastIndex) {
                 layoutDocument.add(AreaBreak())
             }
@@ -65,10 +69,8 @@ object PdfGenerator {
         }
 
 
-
-
-
         layoutDocument.close()
+        return file.absolutePath
 
     }
 
@@ -113,9 +115,6 @@ object PdfGenerator {
             addBodyCell(table, item.treeQualityClasses.classC.toString(), color)
             addBodyCell(table, item.height.toString(), color)
         }
-
-
-
 
         layoutDocument.add(table)
 

@@ -38,7 +38,7 @@ fun MemoDialog(
                                 updateEstimationMemo(estimation = estimation, memo = it)
                             viewModel.updateEstimationFlow(newEstimation)
                         },
-                        modifier = Modifier.size(200.dp),
+                        modifier = Modifier.size(300.dp),
                         label = { Text(text = "Wpisz Notatke") },
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = color2,
