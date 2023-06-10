@@ -3,12 +3,14 @@ package com.example.szacunki.features.estimation.presentation.screens.estimation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -23,11 +25,15 @@ import com.example.szacunki.core.calculations.color1
 import com.example.szacunki.core.calculations.createEstimationToUpdateTreeNames
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
 import com.example.szacunki.features.estimation.presentation.model.baseNameList
+import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun AddSingleTreeDialog(
     viewModel: EstimationViewModel,
     estimation: State<EstimationDisplayable>,
+    treeIndexState: MutableState<Int>,
+    listState: LazyListState,
+    scope: CoroutineScope,
     onDismissRequest: () -> Unit
 ) {
     val newTreeName = rememberSaveable { mutableStateOf("") }
@@ -63,6 +69,9 @@ fun AddSingleTreeDialog(
                                 treeName = newTreeName.value
                             )
                             viewModel.updateEstimationFlow(newEstimation)
+
+                            treeIndexState.value = estimation.value.trees.size
+
                             onDismissRequest()
                         },
                         enabled = newTreeName.value.isNotBlank(),
@@ -85,7 +94,10 @@ fun AddSingleTreeDialog(
                         presentTrees = presentTrees,
                         estimation = estimation,
                         viewModel = viewModel,
-                        onDismissRequest = onDismissRequest
+                        treeIndexState = treeIndexState,
+                        onDismissRequest = onDismissRequest,
+                        listState = listState,
+                        scope = scope
                     )
                 }
             }
@@ -98,6 +110,9 @@ fun ChooseTree(
     presentTrees: List<String>,
     estimation: State<EstimationDisplayable>,
     viewModel: EstimationViewModel,
+    treeIndexState: MutableState<Int>,
+    listState: LazyListState,
+    scope: CoroutineScope,
     onDismissRequest: () -> Unit
 ) {
     LazyVerticalGrid(
@@ -125,6 +140,7 @@ fun ChooseTree(
                                 treeName = treeName
                             )
                             viewModel.updateEstimationFlow(newEstimation)
+                            treeIndexState.value = estimation.value.trees.size
                             onDismissRequest()
                         }) {
                     Text(

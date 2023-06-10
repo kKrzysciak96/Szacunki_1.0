@@ -46,13 +46,12 @@ fun ScrollableColumnTreeParametersRow(
     diameterIndexState: MutableState<Int>,
     classesDialogState: MutableState<Boolean>
 ) {
-
-    val scrollState = rememberScrollState()
+    val verticalScrollState = rememberScrollState()
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 70.dp)
-            .verticalScroll(scrollState)
+            .verticalScroll(state = verticalScrollState)
     ) {
         estimation.value.trees[treeIndex.value].treeRows.forEachIndexed { itemIndex, item ->
             TreeParametersRow(

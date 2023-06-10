@@ -31,11 +31,12 @@ import java.io.File
 fun PdfViewerScreen(path: String) {
     val file = File(path)
     var uri = Uri.fromFile(file)
+    val context = LocalContext.current
     val pdfState = rememberVerticalPdfReaderState(
         resource = ResourceType.Local(uri),
         isZoomEnable = true
     )
-    val context = LocalContext.current
+
 
 
     Box(

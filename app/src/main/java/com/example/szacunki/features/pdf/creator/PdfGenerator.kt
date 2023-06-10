@@ -3,6 +3,7 @@ package com.example.szacunki.features.pdf.creator
 import android.content.Context
 import com.example.szacunki.core.calculations.color2
 import com.example.szacunki.core.extensions.prepareDateToDisplay
+import com.example.szacunki.core.extensions.prepareDateToSave
 import com.example.szacunki.core.extensions.toLocalDateTime
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
 import com.example.szacunki.features.estimation.presentation.model.TreeDisplayable
@@ -27,7 +28,8 @@ object PdfGenerator {
 
     fun generatePdf(context: Context, estimation: EstimationDisplayable): String {
 
-        val fileName = estimation.sectionNumber + "_" + estimation.date.time.toString() + ".pdf"
+        val fileName = estimation.sectionNumber + "_" + estimation.date.toLocalDateTime()
+            .prepareDateToSave() + ".pdf"
         val filePath = context.filesDir
         val file = File(filePath, fileName)
 

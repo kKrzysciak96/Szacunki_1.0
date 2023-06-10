@@ -1,8 +1,9 @@
 package com.example.szacunki.features.estimation.presentation.screens.estimation
 
-import androidx.compose.foundation.ExperimentalFoundationApi
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -11,11 +12,11 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 import java.util.*
 
 
-@OptIn(ExperimentalFoundationApi::class)
 @Destination(route = "EstimationScreen")
 @Composable
 fun EstimationScreen(
@@ -34,6 +35,9 @@ fun EstimationScreen(
 
     val viewModel = getViewModel<EstimationViewModel>()
     val estimation = viewModel.estimationFlow.collectAsState()
+    val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
+    val keyToScrollTopAppBarAfterTreeIsAdded = rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(key1 = Unit) {
         currentIDState.value?.let {
@@ -43,6 +47,17 @@ fun EstimationScreen(
         ).also { currentIDState.value = viewModel.estimationFlow.value?.id }
     }
 
+    LaunchedEffect(
+        key1 = keyToScrollTopAppBarAfterTreeIsAdded.value,
+        block = {
+            Log.d("TEST", if (keyToScrollTopAppBarAfterTreeIsAdded.value) "TRUE" else "FALSE")
+            if (keyToScrollTopAppBarAfterTreeIsAdded.value) {
+                scope.launch { estimation.value?.trees?.let { listState.scrollToItem(index = it.size) } }
+                keyToScrollTopAppBarAfterTreeIsAdded.value = false
+            }
+
+        })
+
 
     if (estimation.value != null) {
         Scaffold(
@@ -51,7 +66,9 @@ fun EstimationScreen(
                     estimation = estimation as State<EstimationDisplayable>,
                     viewModel = viewModel,
                     treeIndexState = treeIndexState,
-                    treeNameState = treeNameState
+                    treeNameState = treeNameState,
+                    listState = listState,
+                    scope = scope
                 )
             },
             bottomBar = {
@@ -59,7 +76,10 @@ fun EstimationScreen(
                     estimation = estimation as State<EstimationDisplayable>,
                     memoState = memoState,
                     context = context,
-                    navigator = navigator
+                    navigator = navigator,
+                    treeIndexState = treeIndexState,
+                    listState = listState,
+                    scope = scope
 
                 )
             },
@@ -78,7 +98,13 @@ fun EstimationScreen(
                     AddSingleTreeDialog(
                         viewModel = viewModel,
                         estimation = estimation as State<EstimationDisplayable>,
-                        onDismissRequest = { treeNameState.value = false }
+                        treeIndexState = treeIndexState,
+                        listState = listState,
+                        scope = scope,
+                        onDismissRequest = {
+                            keyToScrollTopAppBarAfterTreeIsAdded.value = true
+                            treeNameState.value = false
+                        }
                     )
                 }
                 if (memoState.value) {

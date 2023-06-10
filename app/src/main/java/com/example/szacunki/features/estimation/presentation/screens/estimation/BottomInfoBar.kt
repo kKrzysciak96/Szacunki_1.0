@@ -1,37 +1,49 @@
 package com.example.szacunki.features.estimation.presentation.screens.estimation
 
 import android.content.Context
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.BottomAppBar
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.szacunki.R
 import com.example.szacunki.core.calculations.color2
 import com.example.szacunki.core.extensions.toLocalDate
+import com.example.szacunki.core.extensions.trimToDisplaySectionNumber
 import com.example.szacunki.features.destinations.PdfViewerScreenDestination
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
 import com.example.szacunki.features.pdf.creator.PdfGenerator
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BottomInfoBar(
     estimation: State<EstimationDisplayable>,
     memoState: MutableState<Boolean>,
     navigator: DestinationsNavigator,
-    context: Context
+    context: Context,
+    treeIndexState: MutableState<Int>,
+    listState: LazyListState,
+    scope: CoroutineScope
 ) {
+
 
     BottomAppBar(
         modifier = Modifier
@@ -65,21 +77,85 @@ fun BottomInfoBar(
                             navigator.navigate(PdfViewerScreenDestination(navArg))
                         }
                 )
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "Oddział nr.: ${estimation.value.sectionNumber}",
-                        style = MaterialTheme.typography.subtitle1,
-                        fontSize = 26.sp
-                    )
-                    Text(
-                        text = "Data: ${estimation.value.date.toLocalDate()}",
-                        style = MaterialTheme.typography.subtitle1
-                    )
-                }
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.75F)
+                        .clip(RoundedCornerShape(100))
+                        .padding(top = 10.dp, bottom = 10.dp)
+                        .background(MaterialTheme.colors.background)
 
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .align(Alignment.Center)
+
+                    ) {
+                        Text(
+                            text = "Oddz. nr.: ${estimation.value.sectionNumber.trimToDisplaySectionNumber()}",
+                            style = MaterialTheme.typography.subtitle1,
+                            fontSize = 18.sp
+                        )
+                        Text(
+                            text = "Data: ${estimation.value.date.toLocalDate()}",
+                            style = MaterialTheme.typography.subtitle1,
+                            fontSize = 12.sp
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .weight(0.5F)
+                                .fillMaxSize()
+                                .clickable {
+                                    if (treeIndexState.value != 0) {
+                                        scope.launch {
+                                            treeIndexState.value--
+                                            if (treeIndexState.value != 0) {
+                                                listState.scrollToItem(treeIndexState.value - 1)
+                                            }
+                                        }
+                                    }
+                                },
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_arrow_left),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(50.dp)
+                                    .padding(start = 5.dp)
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .weight(0.5F)
+                                .fillMaxSize()
+                                .clickable {
+                                    if (treeIndexState.value != estimation.value.trees.size - 1) {
+                                        treeIndexState.value++
+                                        scope.launch { listState.scrollToItem(treeIndexState.value - 1) }
+                                    }
+                                },
+                            contentAlignment = Alignment.CenterEnd
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_arrow_right),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(50.dp)
+                                    .padding(end = 5.dp)
+                            )
+                        }
+                    }
+                }
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_note),
                     contentDescription = null,
@@ -90,7 +166,6 @@ fun BottomInfoBar(
                         .background(color2)
                         .clickable { memoState.value = true }
                 )
-
             }
         }
     }

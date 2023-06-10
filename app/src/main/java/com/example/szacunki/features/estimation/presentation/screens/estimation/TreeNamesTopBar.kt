@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -27,6 +26,7 @@ import com.example.szacunki.core.calculations.createEstimationToRemoveTree
 import com.example.szacunki.core.extensions.trimToDisplay
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
 import com.example.szacunki.features.estimation.presentation.model.TreeDisplayable
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 
@@ -36,10 +36,13 @@ fun TreeNamesTopBar(
     estimation: State<EstimationDisplayable>,
     viewModel: EstimationViewModel,
     treeIndexState: MutableState<Int>,
-    treeNameState: MutableState<Boolean>
+    treeNameState: MutableState<Boolean>,
+    listState: LazyListState,
+    scope: CoroutineScope
+
 ) {
 
-    val listState = rememberLazyListState()
+
     val snapBehavior = rememberSnapFlingBehavior(lazyListState = listState)
 
     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
@@ -59,7 +62,8 @@ fun TreeNamesTopBar(
                     treeIndexState = treeIndexState,
                     itemIndex = itemIndex,
                     item = item,
-                    listState = listState
+                    listState = listState,
+                    scope = scope
                 )
             }
             item {
@@ -78,9 +82,10 @@ fun TreeNamesItem(
     treeIndexState: MutableState<Int>,
     itemIndex: Int,
     item: TreeDisplayable,
-    listState: LazyListState
+    listState: LazyListState,
+    scope: CoroutineScope
 ) {
-    val scope = rememberCoroutineScope()
+
     val isContextTreeMenuVisible = rememberSaveable { mutableStateOf(false) }
     Box(
         modifier = Modifier
@@ -145,14 +150,17 @@ fun ContextTreeMenu(
         }
         DropdownMenuItem(onClick = {
             val maxIndex = estimation.value.trees.size - 1
-            if (treeIndexState.value == maxIndex) treeIndexState.value--
+            if (treeIndexState.value == maxIndex) {
+                if (maxIndex != 0) {
+                    treeIndexState.value--
+                }
+            }
             if (maxIndex != 0) {
                 val newEstimation = createEstimationToRemoveTree(
                     estimation = estimation,
                     treeToRemove = item
                 )
                 viewModel.updateEstimationFlow(newEstimation)
-
             }
             onDismiss()
         }) {

@@ -17,18 +17,23 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import com.example.szacunki.R
 import com.example.szacunki.core.calculations.color1
 import com.example.szacunki.core.calculations.color2
 import com.example.szacunki.core.extensions.prepareDateToDisplay
 import com.example.szacunki.core.extensions.toLocalDateTime
+import com.example.szacunki.core.extensions.trimToDisplaySectionNumber
 import com.example.szacunki.features.destinations.EstimationScreenDestination
 import com.example.szacunki.features.destinations.PdfViewerScreenDestination
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
 import com.example.szacunki.features.pdf.creator.PdfGenerator
+import com.example.szacunki.features.pdf.creator.PdfGenerator.generatePdf
+import com.example.szacunki.features.pdf.viewer.share
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import org.koin.androidx.compose.getViewModel
+import java.io.File
 import java.util.*
 
 @Destination
@@ -65,6 +70,7 @@ fun AllSavedEstimationsContent(
     estimations: State<List<EstimationDisplayable>>,
     navigator: DestinationsNavigator
 ) {
+
     val context = LocalContext.current
 
     LazyColumn(
@@ -73,7 +79,7 @@ fun AllSavedEstimationsContent(
             .fillMaxWidth()
             .padding(bottom = 50.dp)
     ) {
-        items(estimations.value) {
+        items(estimations.value) { estimation ->
             Card(
                 modifier = Modifier
                     .padding(10.dp),
@@ -85,7 +91,7 @@ fun AllSavedEstimationsContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-                            val id = it.id
+                            val id = estimation.id
                             val navArg = EstimationScreenDestination.NavArgs(
                                 id = id,
                                 sectionNumber = null,
@@ -98,22 +104,50 @@ fun AllSavedEstimationsContent(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     EstimationView(
-                        name = it.sectionNumber,
-                        date = it.date,
-                        modifier = Modifier
+                        name = estimation.sectionNumber.trimToDisplaySectionNumber(),
+                        date = estimation.date,
+                        modifier = Modifier.weight(0.7F)
                     )
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_pdf),
-                        contentDescription = null,
+                    Row(
                         modifier = Modifier
-                            .size(70.dp)
-                            .padding(end = 20.dp)
-                            .clickable {
-                                val path = PdfGenerator.generatePdf(context, it)
-                                val navArg = PdfViewerScreenDestination.NavArgs(path = path)
-                                navigator.navigate(PdfViewerScreenDestination(navArg))
-                            }
-                    )
+                            .weight(0.3F)
+                            .fillMaxSize(),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_send),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .weight(0.5F)
+                                .size(50.dp)
+                                .padding(end = 10.dp)
+                                .clickable {
+                                    val path =
+                                        generatePdf(context = context, estimation = estimation)
+                                    val file = File(path)
+                                    val uri = FileProvider.getUriForFile(
+                                        context,
+                                        "com.example.szacunki.fileprovider",
+                                        file
+                                    )
+                                    share(uri, context)
+                                }
+                        )
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_pdf),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .weight(0.5F)
+                                .size(50.dp)
+                                .padding(end = 10.dp)
+                                .clickable {
+                                    val path = PdfGenerator.generatePdf(context, estimation)
+                                    val navArg = PdfViewerScreenDestination.NavArgs(path = path)
+                                    navigator.navigate(PdfViewerScreenDestination(navArg))
+                                }
+                        )
+                    }
                 }
             }
         }
@@ -130,7 +164,8 @@ fun EstimationView(name: String, date: Date, modifier: Modifier = Modifier) {
             text = title,
             modifier = Modifier.padding(5.dp),
             textAlign = TextAlign.Start,
-            style = MaterialTheme.typography.h5
+            style = MaterialTheme.typography.h5,
+            maxLines = 1
         )
         Text(
             text = date.toLocalDateTime().prepareDateToDisplay(),
