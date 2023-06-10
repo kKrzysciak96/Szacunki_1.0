@@ -2,14 +2,15 @@ package com.example.szacunki.features.estimation.presentation.screens.estimation
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,8 +27,10 @@ import com.example.szacunki.core.calculations.createEstimationToRemoveTree
 import com.example.szacunki.core.extensions.trimToDisplay
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
 import com.example.szacunki.features.estimation.presentation.model.TreeDisplayable
+import kotlinx.coroutines.launch
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TreeNamesTopBar(
     estimation: State<EstimationDisplayable>,
@@ -35,24 +38,33 @@ fun TreeNamesTopBar(
     treeIndexState: MutableState<Int>,
     treeNameState: MutableState<Boolean>
 ) {
-    LazyRow(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(color1),
-        horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        itemsIndexed(estimation.value.trees) { itemIndex, item ->
-            TreeNamesItem(
-                estimation = estimation,
-                viewModel = viewModel,
-                treeIndexState = treeIndexState,
-                itemIndex,
-                item = item
-            )
-        }
-        item {
-            IconAddTreesItem(treeNameState)
+
+    val listState = rememberLazyListState()
+    val snapBehavior = rememberSnapFlingBehavior(lazyListState = listState)
+
+    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color1),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
+            state = listState,
+            flingBehavior = snapBehavior
+        ) {
+            itemsIndexed(estimation.value.trees) { itemIndex, item ->
+                TreeNamesItem(
+                    estimation = estimation,
+                    viewModel = viewModel,
+                    treeIndexState = treeIndexState,
+                    itemIndex = itemIndex,
+                    item = item,
+                    listState = listState
+                )
+            }
+            item {
+                IconAddTreesItem(treeNameState)
+            }
         }
     }
 }
@@ -65,8 +77,10 @@ fun TreeNamesItem(
     viewModel: EstimationViewModel,
     treeIndexState: MutableState<Int>,
     itemIndex: Int,
-    item: TreeDisplayable
+    item: TreeDisplayable,
+    listState: LazyListState
 ) {
+    val scope = rememberCoroutineScope()
     val isContextTreeMenuVisible = rememberSaveable { mutableStateOf(false) }
     Box(
         modifier = Modifier
@@ -74,6 +88,9 @@ fun TreeNamesItem(
             .width(120.dp)
             .background(color = if (treeIndexState.value == itemIndex) color2 else color1)
             .combinedClickable(onClick = {
+                if (itemIndex != 0) {
+                    scope.launch { listState.scrollToItem(itemIndex - 1) }
+                }
                 treeIndexState.value = itemIndex
             }, onLongClick = {
                 isContextTreeMenuVisible.value = true
@@ -92,10 +109,23 @@ fun TreeNamesItem(
             text = textToDisplay,
             style = MaterialTheme.typography.h6,
             modifier = Modifier
+
                 .padding(
                     5.dp
                 ), textAlign = TextAlign.Center
         )
+        if (treeIndexState.value == itemIndex) {
+            Card(
+                backgroundColor = Color.White,
+                shape = RoundedCornerShape(2.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(2.dp)
+                    .align(Alignment.BottomCenter)
+            ) {
+
+            }
+        }
     }
 }
 

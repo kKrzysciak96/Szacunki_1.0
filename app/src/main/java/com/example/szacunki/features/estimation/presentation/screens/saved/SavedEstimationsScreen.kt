@@ -92,6 +92,7 @@ fun AllSavedEstimationsContent(
                                 treeNames = null
                             )
                             navigator.navigate(EstimationScreenDestination(navArg))
+
                         },
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically

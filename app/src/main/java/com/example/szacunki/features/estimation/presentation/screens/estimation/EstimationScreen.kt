@@ -1,5 +1,6 @@
 package com.example.szacunki.features.estimation.presentation.screens.estimation
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Scaffold
@@ -14,6 +15,7 @@ import org.koin.androidx.compose.getViewModel
 import java.util.*
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @Destination(route = "EstimationScreen")
 @Composable
 fun EstimationScreen(
@@ -32,7 +34,6 @@ fun EstimationScreen(
 
     val viewModel = getViewModel<EstimationViewModel>()
     val estimation = viewModel.estimationFlow.collectAsState()
-
 
     LaunchedEffect(key1 = Unit) {
         currentIDState.value?.let {
@@ -59,6 +60,7 @@ fun EstimationScreen(
                     memoState = memoState,
                     context = context,
                     navigator = navigator
+
                 )
             },
             content = {
@@ -90,7 +92,7 @@ fun EstimationScreen(
 
                 Column(modifier = Modifier.fillMaxSize()) {
                     TitleParametersRow(index = treeIndexState.value)
-                    LazyColumnTreeParametersRow(
+                    ScrollableColumnTreeParametersRow(
                         estimation = estimation as State<EstimationDisplayable>,
                         viewModel = viewModel,
                         treeIndex = treeIndexState,

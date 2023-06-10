@@ -3,8 +3,8 @@ package com.example.szacunki.features.estimation.presentation.screens.estimation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -32,37 +32,40 @@ fun TitleParametersRow(index: Int = 0) {
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = "Średnica INDEX: $index")
+        Text(text = "Średnica")
         Text(text = "Liczba Drzew")
         Text(text = "Wysokość")
     }
 }
 
 @Composable
-fun LazyColumnTreeParametersRow(
+fun ScrollableColumnTreeParametersRow(
     estimation: State<EstimationDisplayable>,
     viewModel: EstimationViewModel,
     treeIndex: MutableState<Int>,
     diameterIndexState: MutableState<Int>,
     classesDialogState: MutableState<Boolean>
 ) {
-    LazyColumn(
-        content = {
-            itemsIndexed(estimation.value.trees[treeIndex.value].treeRows) { itemIndex, item ->
-                TreeParametersRow(
-                    diameter = item.diameter,
-                    treeIndex = treeIndex.value,
-                    diameterIndex = itemIndex,
-                    diameterIndexState = diameterIndexState,
-                    estimation = estimation,
-                    viewModel = viewModel,
-                    classesDialogState = classesDialogState
-                )
-            }
-        }, modifier = Modifier
+
+    val scrollState = rememberScrollState()
+    Column(
+        modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 70.dp)
-    )
+            .verticalScroll(scrollState)
+    ) {
+        estimation.value.trees[treeIndex.value].treeRows.forEachIndexed { itemIndex, item ->
+            TreeParametersRow(
+                diameter = item.diameter,
+                treeIndex = treeIndex.value,
+                diameterIndex = itemIndex,
+                diameterIndexState = diameterIndexState,
+                estimation = estimation,
+                viewModel = viewModel,
+                classesDialogState = classesDialogState
+            )
+        }
+    }
 }
 
 @Composable
@@ -78,7 +81,7 @@ fun TreeParametersRow(
     val isHeightDropdownMenuVisible = rememberSaveable { mutableStateOf(false) }
 
     Row(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {

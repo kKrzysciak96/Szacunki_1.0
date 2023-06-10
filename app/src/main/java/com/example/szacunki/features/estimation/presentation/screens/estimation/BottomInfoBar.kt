@@ -1,15 +1,11 @@
 package com.example.szacunki.features.estimation.presentation.screens.estimation
 
 import android.content.Context
-import android.os.Build
-import androidx.annotation.RequiresApi
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.BottomAppBar
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
@@ -28,7 +24,7 @@ import com.example.szacunki.features.pdf.creator.PdfGenerator
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 
-@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BottomInfoBar(
     estimation: State<EstimationDisplayable>,
@@ -99,5 +95,6 @@ fun BottomInfoBar(
         }
     }
 }
+
 
 
