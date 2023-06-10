@@ -10,6 +10,9 @@ interface EstimationDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveEstimationToLocal(estimation: EstimationCached)
 
+    @Delete
+    suspend fun deleteEstimation(estimationCached: EstimationCached)
+
     @Query("SELECT * FROM EstimationCached")
     fun getAllEstimationsFromLocal(): Flow<List<EstimationCached>>
 

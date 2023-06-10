@@ -1,14 +1,14 @@
 package com.example.szacunki.features.estimation.presentation.screens.saved
 
+import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,14 +41,34 @@ import java.util.*
 fun SavedEstimationsScreen(navigator: DestinationsNavigator) {
     val viewModel = getViewModel<SavedEstimationsViewModel>()
     val estimations = viewModel.estimations.collectAsState(emptyList())
+    val deleteDialogVisible = rememberSaveable { mutableStateOf(false) }
+    val estimationToDelete = viewModel.estimationFlow.collectAsState()
 
-    Scaffold(
-        topBar = { SavedEstimationsTopBar() },
-        bottomBar = { SavedEstimationsBottomBar(viewModel = viewModel) },
-        content = {
-            AllSavedEstimationsContent(estimations = estimations, navigator = navigator)
-            it
-        })
+    key(deleteDialogVisible.value) {
+        Scaffold(
+            topBar = { SavedEstimationsTopBar() },
+            bottomBar = { SavedEstimationsBottomBar(viewModel = viewModel) },
+            content = { padding ->
+                estimationToDelete.value?.let {
+                    if (deleteDialogVisible.value) {
+                        DeleteDialog(
+                            estimation = it,
+                            viewModel = viewModel,
+                            onDismiss = {
+                                deleteDialogVisible.value = false
+                            })
+                    }
+                }
+                AllSavedEstimationsContent(
+                    estimations = estimations,
+                    navigator = navigator,
+                    onSwipeToDismiss = {
+                        viewModel.updateEstimationFlow(it)
+                        deleteDialogVisible.value = true
+                    })
+                padding
+            })
+    }
 }
 
 @Composable
@@ -65,10 +85,12 @@ fun SavedEstimationsTopBar() {
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AllSavedEstimationsContent(
     estimations: State<List<EstimationDisplayable>>,
-    navigator: DestinationsNavigator
+    navigator: DestinationsNavigator,
+    onSwipeToDismiss: (EstimationDisplayable) -> Unit,
 ) {
 
     val context = LocalContext.current
@@ -79,75 +101,127 @@ fun AllSavedEstimationsContent(
             .fillMaxWidth()
             .padding(bottom = 50.dp)
     ) {
-        items(estimations.value) { estimation ->
-            Card(
+
+        items(items = estimations.value, key = { it.id }) { estimation ->
+
+            EstimationRow(
+                context = context,
+                estimation = estimation,
+                navigator = navigator,
+                onSwipeToDismiss = onSwipeToDismiss
+            )
+
+
+        }
+    }
+}
+
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun EstimationRow(
+    context: Context,
+    estimation: EstimationDisplayable,
+    navigator: DestinationsNavigator,
+    onSwipeToDismiss: (EstimationDisplayable) -> Unit
+) {
+    val dismissState = rememberDismissState(confirmStateChange = {
+        if (it == DismissValue.DismissedToStart) {
+            onSwipeToDismiss(estimation)
+        }
+        true
+    })
+    dismissState.currentValue
+    SwipeToDismiss(
+        state = dismissState,
+        background = {
+            Box(
                 modifier = Modifier
-                    .padding(10.dp),
-                backgroundColor = color1,
-                elevation = 10.dp,
-                shape = RoundedCornerShape(10.dp)
+                    .fillMaxWidth()
+                    .padding(start = 100.dp, end = 20.dp, top = 20.dp, bottom = 10.dp),
+                contentAlignment = Alignment.CenterEnd
             ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_delete),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(60.dp)
+                        .padding(end = 10.dp),
+                    tint = Color.Red
+                )
+            }
+        },
+        dismissThresholds = { FractionalThreshold(0.75F) },
+        directions = setOf(DismissDirection.EndToStart)
+    ) {
+
+        Card(
+            modifier = Modifier
+                .padding(10.dp),
+            backgroundColor = color1,
+            elevation = 5.dp,
+            shape = RoundedCornerShape(10.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        val id = estimation.id
+                        val navArg = EstimationScreenDestination.NavArgs(
+                            id = id,
+                            sectionNumber = null,
+                            treeNames = null
+                        )
+                        navigator.navigate(EstimationScreenDestination(navArg))
+
+                    },
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                EstimationView(
+                    name = estimation.sectionNumber.trimToDisplaySectionNumber(),
+                    date = estimation.date,
+                    modifier = Modifier.weight(0.7F)
+                )
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            val id = estimation.id
-                            val navArg = EstimationScreenDestination.NavArgs(
-                                id = id,
-                                sectionNumber = null,
-                                treeNames = null
-                            )
-                            navigator.navigate(EstimationScreenDestination(navArg))
-
-                        },
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                        .weight(0.3F)
+                        .fillMaxSize(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    EstimationView(
-                        name = estimation.sectionNumber.trimToDisplaySectionNumber(),
-                        date = estimation.date,
-                        modifier = Modifier.weight(0.7F)
-                    )
-                    Row(
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_send),
+                        contentDescription = null,
                         modifier = Modifier
-                            .weight(0.3F)
-                            .fillMaxSize(),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_send),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .weight(0.5F)
-                                .size(50.dp)
-                                .padding(end = 10.dp)
-                                .clickable {
-                                    val path =
-                                        generatePdf(context = context, estimation = estimation)
-                                    val file = File(path)
-                                    val uri = FileProvider.getUriForFile(
-                                        context,
-                                        "com.example.szacunki.fileprovider",
-                                        file
-                                    )
-                                    share(uri, context)
-                                }
-                        )
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_pdf),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .weight(0.5F)
-                                .size(50.dp)
-                                .padding(end = 10.dp)
-                                .clickable {
-                                    val path = PdfGenerator.generatePdf(context, estimation)
-                                    val navArg = PdfViewerScreenDestination.NavArgs(path = path)
-                                    navigator.navigate(PdfViewerScreenDestination(navArg))
-                                }
-                        )
-                    }
+                            .weight(0.5F)
+                            .size(50.dp)
+                            .padding(end = 10.dp)
+                            .clickable {
+                                val path =
+                                    generatePdf(context = context, estimation = estimation)
+                                val file = File(path)
+                                val uri = FileProvider.getUriForFile(
+                                    context,
+                                    "com.example.szacunki.fileprovider",
+                                    file
+                                )
+                                share(uri, context)
+                            }
+                    )
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_pdf),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .weight(0.5F)
+                            .size(50.dp)
+                            .padding(end = 10.dp)
+                            .clickable {
+                                val path = PdfGenerator.generatePdf(context, estimation)
+                                val navArg = PdfViewerScreenDestination.NavArgs(path = path)
+                                navigator.navigate(PdfViewerScreenDestination(navArg))
+                            }
+                    )
                 }
             }
         }

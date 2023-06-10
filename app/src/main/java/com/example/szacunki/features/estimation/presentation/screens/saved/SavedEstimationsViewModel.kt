@@ -11,7 +11,8 @@ import java.util.*
 class SavedEstimationsViewModel(private val estimationRepository: EstimationRepository) :
     ViewModel() {
 
-    val estimations = getAllEstimations()
+    var estimations = getAllEstimations()
+
 
     private fun getAllEstimations() = estimationRepository.getAllEstimationsFromLocal()
         .map { estimationDomain -> estimationDomain.map { EstimationDisplayable(it) } }
@@ -34,8 +35,16 @@ class SavedEstimationsViewModel(private val estimationRepository: EstimationRepo
         viewModelScope.launch { estimationRepository.updateEstimation(estimationDisplayable.toEstimationDomain()) }
     }
 
+    fun deleteEstimation(estimationDisplayable: EstimationDisplayable) {
+        viewModelScope.launch { estimationRepository.deleteEstimation(estimationDisplayable.toEstimationDomain()) }
+    }
+
     fun dropDataBase() {
         viewModelScope.launch { estimationRepository.dropDataBase() }
+    }
+
+    fun updateEstimationFlow(estimation: EstimationDisplayable) {
+        _estimationFlow.update { estimation }
     }
 
 

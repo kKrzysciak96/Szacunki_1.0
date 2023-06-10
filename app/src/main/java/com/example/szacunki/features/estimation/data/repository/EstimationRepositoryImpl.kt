@@ -49,4 +49,8 @@ class EstimationRepositoryImpl(private val estimationDao: EstimationDao) : Estim
         }
     }
 
+    override suspend fun deleteEstimation(estimationDomain: EstimationDomain) {
+        estimationDao.deleteEstimation(EstimationCached(estimationDomain))
+    }
+
 }

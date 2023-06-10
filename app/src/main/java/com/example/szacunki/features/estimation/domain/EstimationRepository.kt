@@ -11,5 +11,6 @@ interface EstimationRepository {
     fun getSingleEstimationsFromLocal(id: UUID): Flow<EstimationDomain>
     suspend fun dropDataBase()
     suspend fun updateEstimation(estimationDomain: EstimationDomain)
+    suspend fun deleteEstimation(estimationDomain: EstimationDomain)
 
 }
