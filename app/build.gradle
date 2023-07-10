@@ -75,7 +75,7 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
 
     //room dependencies
-    def room_version = "2.5.1"
+    def room_version = "2.5.2"
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
     ksp "androidx.room:room-compiler:$room_version"
@@ -97,16 +97,21 @@ dependencies {
     //gson
     implementation 'com.google.code.gson:gson:2.10.1'
 
-    //accompanist pager
-//    implementation "com.google.accompanist:accompanist-pager:0.30.1"
-//    implementation "com.google.accompanist:accompanist-pager-indicators:0.30.1"
-    implementation("androidx.compose.foundation:foundation:1.4.3")
+
+    //implementation("androidx.compose.foundation:foundation:1.4.3")
 
     //pdf view
     implementation 'io.github.grizzi91:bouquet:1.1.2'
 
     //itext7
     implementation 'com.itextpdf:itext7-core:7.1.12'
+
+    //location dependency
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
+    //map dependencies
+    implementation 'org.osmdroid:osmdroid-android:6.1.16'
+    //WMS services
+    implementation 'org.osmdroid:osmdroid-wms:6.1.16'
 
 
 }

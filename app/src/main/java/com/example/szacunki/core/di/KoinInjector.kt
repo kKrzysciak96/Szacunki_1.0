@@ -5,5 +5,6 @@ import org.koin.core.module.Module
 val koinInjector = listOf<Module>(
     appModule,
     dataBaseModule,
-    estimationModule
+    estimationModule,
+    mapModule
 )

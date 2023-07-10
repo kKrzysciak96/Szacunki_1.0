@@ -1,5 +1,6 @@
 package com.example.szacunki.features.estimation.presentation.screens.estimation
 
+import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
@@ -16,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -172,6 +174,7 @@ fun ContextTreeMenu(
 
 @Composable
 fun IconAddTreesItem(treeNameState: MutableState<Boolean>) {
+    val context = LocalContext.current
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -187,9 +190,19 @@ fun IconAddTreesItem(treeNameState: MutableState<Boolean>) {
                     .width(40.dp)
                     .background(color1)
                     .pointerInput(Unit) {
-                        detectTapGestures(onLongPress = {
-                            treeNameState.value = true
-                        })
+                        detectTapGestures(
+                            onLongPress = {
+                                treeNameState.value = true
+                            },
+                            onTap = {
+                                Toast
+                                    .makeText(
+                                        context,
+                                        "Przytrzymaj aby dodać",
+                                        Toast.LENGTH_LONG
+                                    )
+                                    .show()
+                            })
                     }
             )
         }

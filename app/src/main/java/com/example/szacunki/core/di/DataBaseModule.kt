@@ -11,4 +11,5 @@ val dataBaseModule = module {
             .fallbackToDestructiveMigration().build()
     }
     factory { get<EstimationDataBase>().provideEstimationDao() }
+    factory { get<EstimationDataBase>().provideGeoNoteDao() }
 }

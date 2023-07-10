@@ -24,8 +24,8 @@ import com.example.szacunki.core.calculations.color2
 import com.example.szacunki.core.extensions.prepareDateToDisplay
 import com.example.szacunki.core.extensions.toLocalDateTime
 import com.example.szacunki.core.extensions.trimToDisplaySectionNumber
-import com.example.szacunki.features.destinations.EstimationScreenDestination
-import com.example.szacunki.features.destinations.PdfViewerScreenDestination
+import com.example.szacunki.destinations.EstimationScreenDestination
+import com.example.szacunki.destinations.PdfViewerScreenDestination
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
 import com.example.szacunki.features.pdf.creator.PdfGenerator
 import com.example.szacunki.features.pdf.creator.PdfGenerator.generatePdf
@@ -56,6 +56,7 @@ fun SavedEstimationsScreen(navigator: DestinationsNavigator) {
                             viewModel = viewModel,
                             onDismiss = {
                                 deleteDialogVisible.value = false
+
                             })
                     }
                 }
@@ -102,7 +103,9 @@ fun AllSavedEstimationsContent(
             .padding(bottom = 50.dp)
     ) {
 
-        items(items = estimations.value, key = { it.id }) { estimation ->
+        items(
+            items = estimations.value.sortedByDescending { it.date.time },
+            key = { it.id }) { estimation ->
 
             EstimationRow(
                 context = context,
@@ -173,6 +176,12 @@ fun EstimationRow(
                             treeNames = null
                         )
                         navigator.navigate(EstimationScreenDestination(navArg))
+//                        val navArg = EstimationScreenScrollDestination.NavArgs(
+//                            id = id,
+//                            sectionNumber = null,
+//                            treeNames = null
+//                        )
+//                        navigator.navigate(EstimationScreenScrollDestination(navArg))
 
                     },
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -219,7 +228,11 @@ fun EstimationRow(
                             .clickable {
                                 val path = PdfGenerator.generatePdf(context, estimation)
                                 val navArg = PdfViewerScreenDestination.NavArgs(path = path)
-                                navigator.navigate(PdfViewerScreenDestination(navArg))
+                                navigator.navigate(
+                                    com.example.szacunki.destinations.PdfViewerScreenDestination(
+                                        navArg
+                                    )
+                                )
                             }
                     )
                 }

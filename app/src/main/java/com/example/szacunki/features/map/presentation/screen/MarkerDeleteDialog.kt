@@ -1,4 +1,4 @@
-package com.example.szacunki.features.estimation.presentation.screens.saved
+package com.example.szacunki.features.map.presentation.screen
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
@@ -12,13 +12,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.szacunki.core.calculations.color2
-import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
+import com.example.szacunki.core.extensions.CustomMarker
+import org.osmdroid.views.MapView
+import java.util.*
 
 
 @Composable
-fun DeleteDialog(
-    estimation: EstimationDisplayable,
-    viewModel: SavedEstimationsViewModel,
+fun MarkerDeleteDialog(
+    mapView: MapView,
+    id: UUID?,
+    viewModel: MapViewModel,
     onDismiss: () -> Unit
 ) {
 
@@ -31,7 +34,7 @@ fun DeleteDialog(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Czy napewno usunąć dokument?",
+                        text = "Czy napewno usunąć marker?",
                         style = MaterialTheme.typography.h6,
                         modifier = Modifier.padding(5.dp),
                         textAlign = TextAlign.Center
@@ -43,7 +46,16 @@ fun DeleteDialog(
                             colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
                             border = BorderStroke(width = 1.dp, color = Color.Black),
                             onClick = {
-                                viewModel.deleteEstimation(estimationDisplayable = estimation)
+                                id?.let { id ->
+                                    (mapView.overlays.find { predicate ->
+                                        (predicate is CustomMarker && predicate.id == id.toString())
+
+                                    }).let {
+                                        (it as CustomMarker).closeInfoWindow()
+                                        mapView.overlays.remove(it)
+                                    }
+                                    viewModel.deleteGeoNote(id = id)
+                                }
                                 onDismiss()
                             })
                         {

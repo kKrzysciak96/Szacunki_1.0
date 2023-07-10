@@ -2,7 +2,7 @@ package com.example.szacunki.core.screen
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.rememberNavController
-import com.example.szacunki.features.NavGraphs
+import com.example.szacunki.NavGraphs
 import com.ramcosta.composedestinations.DestinationsNavHost
 
 

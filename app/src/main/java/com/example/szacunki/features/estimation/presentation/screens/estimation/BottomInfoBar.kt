@@ -25,7 +25,7 @@ import com.example.szacunki.R
 import com.example.szacunki.core.calculations.color2
 import com.example.szacunki.core.extensions.toLocalDate
 import com.example.szacunki.core.extensions.trimToDisplaySectionNumber
-import com.example.szacunki.features.destinations.PdfViewerScreenDestination
+import com.example.szacunki.destinations.PdfViewerScreenDestination
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
 import com.example.szacunki.features.pdf.creator.PdfGenerator
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
