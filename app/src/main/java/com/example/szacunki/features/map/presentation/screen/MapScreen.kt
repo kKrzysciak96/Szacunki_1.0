@@ -17,9 +17,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.example.szacunki.R
 import com.example.szacunki.core.extensions.*
 import com.example.szacunki.features.map.presentation.model.GeoNoteDisplayable
@@ -55,19 +58,18 @@ fun MapScreen() {
 fun CustomMapView(mapView: MapView) {
 
     val viewModel = getViewModel<MapViewModel>()
-    val lastLocation = viewModel.lastLocation.collectAsState()
-    val locationToZoom = viewModel.locationToZoomLocation.collectAsState()
-    val clickedLocation = viewModel.clickedLocation.collectAsState()
-
-    val currentLocation = viewModel.currentLocation.collectAsState()
-    val geoNotes = viewModel.geoNotes.collectAsState(emptyList())
     val isGpsEnabled = viewModel.isGpsEnabled.collectAsState()
+    val locationToZoom = viewModel.locationToZoomLocation.collectAsState()
+    val currentLocation = viewModel.currentLocation.collectAsState()
+    val cameraState = viewModel.cameraState.collectAsState()
 
-    val isObjectDialogVisible = rememberSaveable { mutableStateOf(false) }
+    val geoNotes = viewModel.geoNotes.collectAsState()
+
+    val isObjectToUpdateDialogVisible = rememberSaveable { mutableStateOf(false) }
     val isObjectOnMapClickedDialogVisible = rememberSaveable { mutableStateOf(false) }
     val isDeleteMarkerDialogVisible = rememberSaveable { mutableStateOf(false) }
-    val chosenMarker = rememberSaveable { mutableStateOf<UUID?>(null) }
-    val chosenInfoWindow = rememberSaveable { mutableStateOf<UUID?>(null) }
+    val chosenMarkerId = rememberSaveable { mutableStateOf<UUID?>(null) }
+    val chosenInfoWindowId = rememberSaveable { mutableStateOf<UUID?>(null) }
 
     val infiniteTransition = rememberInfiniteTransition()
     val angle by infiniteTransition.animateFloat(
@@ -77,37 +79,50 @@ fun CustomMapView(mapView: MapView) {
             animation = tween(2000, easing = LinearEasing)
         )
     )
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_DESTROY) {
+                viewModel.onDestroyActivity()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
 
-        if (isObjectDialogVisible.value || isObjectOnMapClickedDialogVisible.value) {
-            ObjectDialog(geoNoteToUpdate = if (chosenInfoWindow.value != null) geoNotes.value.first { it.id == chosenInfoWindow.value } else null,
-                latitude = if (isObjectDialogVisible.value) {
+        if (isObjectToUpdateDialogVisible.value || isObjectOnMapClickedDialogVisible.value) {
+            ObjectDialog(geoNoteToUpdate = if (chosenInfoWindowId.value != null) geoNotes.value.first { it.id == chosenInfoWindowId.value } else null,
+                latitude = if (isObjectToUpdateDialogVisible.value) {
                     currentLocation.value.latitude
                 } else {
-                    clickedLocation.value?.latitude ?: 0.0
+                    locationToZoom.value?.latitude ?: 0.0
                 },
-                longitude = if (isObjectDialogVisible.value) {
+                longitude = if (isObjectToUpdateDialogVisible.value) {
                     currentLocation.value.longitude
                 } else {
-                    clickedLocation.value?.longitude ?: 0.0
+                    locationToZoom.value?.longitude ?: 0.0
                 },
                 viewModel = viewModel,
                 onDismiss = { latitude, longitude ->
-                    chosenInfoWindow.value = null
-                    isObjectDialogVisible.value = false
+                    chosenInfoWindowId.value = null
+                    isObjectToUpdateDialogVisible.value = false
                     isObjectOnMapClickedDialogVisible.value = false
                     isDeleteMarkerDialogVisible.value = false
                     viewModel.updateLocationToZoom(GeoPoint(latitude, longitude))
 
                 })
         }
-        if (!isObjectDialogVisible.value && !isObjectOnMapClickedDialogVisible.value && isDeleteMarkerDialogVisible.value) {
+        if (!isObjectToUpdateDialogVisible.value && !isObjectOnMapClickedDialogVisible.value && isDeleteMarkerDialogVisible.value) {
             MarkerDeleteDialog(
                 mapView = mapView,
-                id = chosenMarker.value,
+                id = chosenMarkerId.value,
                 viewModel = viewModel,
                 onDismiss = {
                     isDeleteMarkerDialogVisible.value = false
@@ -115,19 +130,17 @@ fun CustomMapView(mapView: MapView) {
         }
 
         AndroidView(
-            factory = { mapView }, modifier = Modifier.fillMaxSize()
-        ) {
-            it.apply {
-                if (locationToZoom.value != null) {
-                    goToCurrentPosition(locationToZoom.value)
-                } else {
-                    goToCurrentPosition(lastLocation.value)
+            factory = { mapView },
+            modifier = Modifier.fillMaxSize(),
+            update = {
+                it.apply {
+                    Log.d("ANDROIDVIEW", "UPDATE")
                 }
-                val listener: MapListener = CustomMapListener { }
-                addMapListener(listener)
-                setTileSource(TileSourceFactory.MAPNIK)
             }
-        }
+        )
+        LaunchedEffect(key1 = locationToZoom.value, block = {
+            mapView.goToPosition(locationToZoom.value, cameraState.value.zoom)
+        })
 
         if (currentLocation.value.latitude != 0.0 && currentLocation.value.latitude != 0.0 && isGpsEnabled.value) {
             Card(
@@ -158,13 +171,13 @@ fun CustomMapView(mapView: MapView) {
         IconButton(
             onClick = {
                 mapView.refreshLocation()
-                mapView.goToCurrentPosition(
-                    if (currentLocation.value.latitude == 0.0 && currentLocation.value.longitude == 0.0) {
-                        lastLocation.value
-                    } else {
-                        currentLocation.value
-                    }
-                )
+
+                if (currentLocation.value.latitude == 0.0 && currentLocation.value.longitude == 0.0) {
+                    mapView.goToPosition(locationToZoom.value)
+                } else {
+                    mapView.goToPosition(currentLocation.value)
+                }
+
             },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
@@ -179,7 +192,7 @@ fun CustomMapView(mapView: MapView) {
         IconButton(
             onClick = {
                 if (isGpsEnabled.value) {
-                    isObjectDialogVisible.value = true
+                    isObjectToUpdateDialogVisible.value = true
                 } else {
                     Toast.makeText(mapView.context, "Włącz Lokalizację", Toast.LENGTH_LONG).show()
                 }
@@ -204,10 +217,10 @@ fun CustomMapView(mapView: MapView) {
             viewModel = viewModel,
             geoNotes = geoNotes,
             mapView = mapView,
-            chosenMarker = chosenMarker,
-            chosenInfoWindow = chosenInfoWindow,
+            chosenMarkerId = chosenMarkerId,
+            chosenInfoWindowId = chosenInfoWindowId,
             isDeleteMarkerDialogVisible = isDeleteMarkerDialogVisible,
-            isObjectDialogVisible = isObjectDialogVisible
+            isObjectDialogVisible = isObjectToUpdateDialogVisible
         )
     })
 
@@ -215,10 +228,19 @@ fun CustomMapView(mapView: MapView) {
     LaunchedEffect(key1 = Unit, block = {
         mapView.apply {
             setMapConfigurations()
-            addPinFeature {
-                viewModel.updateClickedLocation(it)
+            setTileSource(TileSourceFactory.MAPNIK)
+            addPinFeature(longPressHelperListener = {
+                viewModel.updateLocationToZoom(it)
                 isObjectOnMapClickedDialogVisible.value = true
+            })
+            val listener: MapListener = CustomMapListener {
+                viewModel.updateCameraState(
+                    mapCenter.latitude,
+                    mapCenter.longitude,
+                    zoomLevelDouble
+                )
             }
+            addMapListener(listener)
         }
     })
 }
@@ -227,18 +249,16 @@ fun redrawMapView(
     viewModel: MapViewModel,
     geoNotes: State<List<GeoNoteDisplayable>>,
     mapView: MapView,
-    chosenMarker: MutableState<UUID?>,
-    chosenInfoWindow: MutableState<UUID?>,
+    chosenMarkerId: MutableState<UUID?>,
+    chosenInfoWindowId: MutableState<UUID?>,
     isDeleteMarkerDialogVisible: MutableState<Boolean>,
     isObjectDialogVisible: MutableState<Boolean>
 ) {
-
-
     geoNotes.value.forEach { geoNote ->
         mapView.removeOldMarker(geoNote)
         mapView.apply {
             addMarkerToMap(context = context, geoNote = geoNote, onLongPress = {
-                chosenMarker.value = it.id
+                chosenMarkerId.value = it.id
                 viewModel.updateLocationToZoom(
                     GeoPoint(
                         geoNote.latitude, geoNote.longitude
@@ -246,7 +266,7 @@ fun redrawMapView(
                 )
                 isDeleteMarkerDialogVisible.value = true
             }, onLongInfoWindowListener = {
-                chosenInfoWindow.value = it
+                chosenInfoWindowId.value = it
                 isObjectDialogVisible.value = true
             })
         }
@@ -254,5 +274,3 @@ fun redrawMapView(
 
     }
 }
-
-

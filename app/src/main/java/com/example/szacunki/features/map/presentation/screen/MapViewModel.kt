@@ -8,6 +8,7 @@ import com.example.szacunki.core.location.LocationProvider
 import com.example.szacunki.core.location.LocationProviderImpl
 import com.example.szacunki.features.map.domain.MapRepository
 import com.example.szacunki.features.map.domain.SharedPreferencesRepository
+import com.example.szacunki.features.map.presentation.model.CameraState
 import com.example.szacunki.features.map.presentation.model.GeoNoteDisplayable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -26,39 +27,42 @@ class MapViewModel(
     private val locationProvider: LocationProvider
 ) : ViewModel() {
 
-    private val _cameraState = MutableStateFlow(Location(""))
+    private val _cameraState = MutableStateFlow<CameraState>(CameraState(0.0, 0.0, 15.0))
     val cameraState = _cameraState.asStateFlow()
-
-    private var _clickedLocation = MutableStateFlow<GeoPoint?>(null)
-    val clickedLocation = _clickedLocation.asStateFlow()
 
     private var _locationToZoomLocation = MutableStateFlow<GeoPoint?>(null)
     val locationToZoomLocation = _locationToZoomLocation.asStateFlow()
 
-    val geoNotes = getAllGeoNotes()
+    //    val geoNotes = getAllGeoNotes()
+    private val _geoNotes = MutableStateFlow<List<GeoNoteDisplayable>>(emptyList())
+    val geoNotes = _geoNotes.asStateFlow()
 
     private val _isGpsEnabled = MutableStateFlow(false)
     val isGpsEnabled = _isGpsEnabled.asStateFlow()
 
-    //    val _currentLocation = MutableStateFlow(Location(""))
     private val _currentLocation = MutableStateFlow<Location>(Location(""))
     val currentLocation = _currentLocation.asStateFlow()
 
-    private var _lastLocation = MutableStateFlow<Location>(Location(""))
-    val lastLocation = _lastLocation.asStateFlow()
 
     init {
-        loadLastLocation()
-        getLocation()
+        getAllGeoNotesState()
+        loadCameraState()
+        getCurrentLocation()
         getGpsStatus()
     }
 
-    fun isGpsEnabled() = locationProvider
+    fun updateCameraState(latitude: Double, longitude: Double, zoom: Double) {
+        _cameraState.update { CameraState(latitude, longitude, zoom) }
+    }
 
-    private fun getLocation() {
+    fun updateLocationToZoom(geoPoint: GeoPoint?) {
+        _locationToZoomLocation.update { geoPoint }
+    }
+
+    private fun getCurrentLocation() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                locationProvider.getCurrentLocationFlow(5000).collect() {
+                locationProvider.getCurrentLocation(5000).collect() {
                     _currentLocation.value = it
                 }
             }
@@ -75,27 +79,47 @@ class MapViewModel(
         }
     }
 
-    private fun loadLastLocation() {
+
+    private fun loadCameraState() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                val (latitude, longitude) = sharedPreferencesRepository.loadLastLocation()
+                val cameraState = sharedPreferencesRepository.loadCameraState()
                 val location = Location("")
-                location.latitude = latitude
-                location.longitude = longitude
-                _lastLocation.update { location }
+                location.latitude = cameraState.latitude
+                location.longitude = cameraState.longitude
+                _cameraState.update { cameraState }
+                _locationToZoomLocation.update {
+                    GeoPoint(
+                        cameraState.latitude,
+                        cameraState.longitude
+                    )
+                }
             }
         }
     }
 
-    private fun saveLastLocation() {
+    private fun saveCameraState() {
         GlobalScope.launch {
             withContext(Dispatchers.IO) {
-                if (currentLocation.value.latitude != 0.0 && currentLocation.value.longitude != 0.0) {
-                    sharedPreferencesRepository.saveLastLocation(
-                        currentLocation.value.latitude,
-                        currentLocation.value.longitude
+                sharedPreferencesRepository.saveCameraState(
+                    CameraState(
+                        cameraState.value.latitude,
+                        cameraState.value.longitude,
+                        cameraState.value.zoom
                     )
+                )
+            }
+        }
+    }
+
+    private fun getAllGeoNotesState() {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                mapRepository.getAllGeoNotesFromLocal()
+                    .map { geoNotesList -> geoNotesList.map { GeoNoteDisplayable(it) } }.collect() {
+                    _geoNotes.value = it
                 }
+
             }
         }
     }
@@ -107,16 +131,8 @@ class MapViewModel(
         viewModelScope.launch { mapRepository.saveGeoNoteToLocal(geoNote.toGeoNoteDomain()) }
     }
 
-    fun update(geoNote: GeoNoteDisplayable) {
+    fun updateGeoNote(geoNote: GeoNoteDisplayable) {
         viewModelScope.launch { mapRepository.updateGeoNote(geoNote.toGeoNoteDomain()) }
-    }
-
-    fun updateLocationToZoom(geoPoint: GeoPoint?) {
-        _locationToZoomLocation.update { geoPoint }
-    }
-
-    fun updateClickedLocation(geoPoint: GeoPoint?) {
-        _clickedLocation.update { geoPoint }
     }
 
     private fun dropDataBase() {
@@ -127,11 +143,20 @@ class MapViewModel(
         viewModelScope.launch { withContext(Dispatchers.IO) { mapRepository.deleteGeoNote(id) } }
     }
 
-    fun getLastLocation() = currentLocation.value
+    fun onDestroyActivity() {
+        _locationToZoomLocation.update {
+            GeoPoint(
+                cameraState.value.latitude,
+                cameraState.value.longitude
+            )
+        }
+    }
 
     override fun onCleared() {
         super.onCleared()
-        saveLastLocation()
+        saveCameraState()
         Log.d("VIEWMODEL", "CLEARED")
     }
+
+
 }

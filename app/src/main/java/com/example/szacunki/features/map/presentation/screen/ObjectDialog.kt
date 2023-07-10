@@ -31,9 +31,11 @@ fun ObjectDialog(
     if (geoNoteToUpdate != null) {
 
         LaunchedEffect(key1 = Unit, block = {
-            title.value = geoNoteToUpdate.title
-            description.value = geoNoteToUpdate.note
-            section.value = geoNoteToUpdate.section
+            title.value = title.value.ifBlank {
+                geoNoteToUpdate.title
+            }
+            description.value = description.value.ifBlank { geoNoteToUpdate.note }
+            section.value = section.value.ifBlank { geoNoteToUpdate.section }
         })
         DialogToUpdateObject(
             geoNoteToUpdate = geoNoteToUpdate,
@@ -135,7 +137,7 @@ fun DialogToUpdateObject(
                         )
                     )
                     OutlinedButton(onClick = {
-                        viewModel.update(
+                        viewModel.updateGeoNote(
                             geoNote = geoNoteToUpdate.copy(
                                 section = section.value,
                                 title = title.value,

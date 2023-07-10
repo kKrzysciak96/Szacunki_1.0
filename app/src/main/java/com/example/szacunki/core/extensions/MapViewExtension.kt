@@ -51,7 +51,7 @@ fun MapView.refreshLocation() {
     }
 }
 
-fun MapView.goToCurrentPosition(location: Location?) {
+fun MapView.goToPosition(location: Location?) {
     this.controller.animateTo(
         GeoPoint(
             location?.latitude ?: 0.0, location?.longitude ?: 0.0
@@ -59,7 +59,8 @@ fun MapView.goToCurrentPosition(location: Location?) {
     )
 }
 
-fun MapView.goToCurrentPosition(geoPoint: GeoPoint?) {
+
+fun MapView.goToPosition(geoPoint: GeoPoint?) {
     this.controller.animateTo(
         GeoPoint(
             geoPoint?.latitude ?: 0.0, geoPoint?.longitude ?: 0.0
@@ -67,30 +68,16 @@ fun MapView.goToCurrentPosition(geoPoint: GeoPoint?) {
     )
 }
 
-
-fun MapView.addMarkerToMap2(
-    context: Context,
-    geoNote: GeoNoteDisplayable,
-    onLongPress: (GeoNoteDisplayable) -> Unit,
-    onLongInfoWindowListener: (UUID) -> Unit
-) {
-    var isMarkerPresent = false
-    overlayManager.forEach { predicate ->
-        if (predicate is CustomMarker) {
-            if (predicate.id == geoNote.id.toString()) {
-                isMarkerPresent = true
-            }
-        }
-    }
-    if (!isMarkerPresent) {
-        val marker = this.createCustomMarker(geoNote, onLongPress)
-        marker.adjustCustomMarker(this, geoNote, context, onLongInfoWindowListener)
-        overlays.add(marker)
-    } else {
-
-    }
-    invalidate()
+fun MapView.goToPosition(geoPoint: GeoPoint?, zoom: Double) {
+    this.controller.animateTo(
+        GeoPoint(
+            geoPoint?.latitude ?: 0.0, geoPoint?.longitude ?: 0.0
+        ), zoom, 500L
+    )
 }
+
+
+
 
 fun MapView.createCustomMarker(
     geoNote: GeoNoteDisplayable, onLongPress: (GeoNoteDisplayable) -> Unit
@@ -124,46 +111,6 @@ fun Marker.adjustCustomMarker(
     }
 }
 
-fun MapView.addMarkerToMap3(
-    context: Context,
-    geoNote: GeoNoteDisplayable,
-    onLongPress: (GeoNoteDisplayable) -> Unit,
-    onLongInfoWindowListener: (UUID) -> Unit
-) {
-    var isMarkerPresent = false
-    overlayManager.forEach { predicate ->
-        if (predicate is CustomMarker) {
-            if (predicate.id == geoNote.id.toString()) {
-                isMarkerPresent = true
-            }
-        }
-    }
-    if (!isMarkerPresent) {
-        val marker = CustomMarker(this) { onLongPress(geoNote) }
-        marker.apply {
-            position = GeoPoint(geoNote.latitude, geoNote.longitude)
-            icon = AppCompatResources.getDrawable(context, R.drawable.ic_location)
-            title = geoNote.title
-            setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
-            this.id = geoNote.id.toString()
-            val titleToDisplay = geoNote.title + "," + " " + "Oddział" + " " + geoNote.section
-            infoWindow = CustomInfoWindow(
-                id = geoNote.id,
-                title = titleToDisplay,
-                description = geoNote.note,
-                mapView = this@addMarkerToMap3,
-                onLongInfoWindowListener = onLongInfoWindowListener
-            )
-
-        }
-        overlays.add(marker)
-    } else {
-
-    }
-
-    invalidate()
-}
-
 fun MapView.removeOldMarker(geoNote: GeoNoteDisplayable) {
     this.overlays.forEach { predicate ->
         if (predicate is CustomMarker) {
@@ -193,11 +140,11 @@ fun MapView.addMarkerToMap(
 
 class CustomMapListener(val listener: () -> Unit) : MapListener {
     override fun onScroll(event: ScrollEvent?): Boolean {
+        listener()
         return false
     }
 
     override fun onZoom(event: ZoomEvent?): Boolean {
-        listener()
         return false
     }
 }

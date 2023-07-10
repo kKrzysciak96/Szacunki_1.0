@@ -3,6 +3,7 @@ package com.example.szacunki.core.screen.general
 import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,10 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import com.example.szacunki.core.calculations.color1
+import com.example.szacunki.core.calculations.color2
+import com.example.szacunki.core.composablefunctions.GradientBackground
 import com.example.szacunki.destinations.MapScreenDestination
 import com.example.szacunki.destinations.SavedEstimationsScreenDestination
 import com.example.szacunki.destinations.SectionSelectionScreenDestination
@@ -33,17 +38,23 @@ fun GeneralScreen(navigator: DestinationsNavigator) {
                     navigator.navigateToMapScreen()
                 }
             })
-    Box(contentAlignment = Alignment.Center) {
+    Box(
+        contentAlignment = Alignment.Center, modifier = Modifier
+            .fillMaxSize()
+            .background(
+                GradientBackground(colorList = listOf(Color.White, color1, color2))
+            )
+    ) {
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             OutlinedButton(onClick = { navigator.navigate(SectionSelectionScreenDestination) }) {
-                Text(text = "Utwórz nowy dokument")
+                Text(text = "Utwórz nowy dokument", color = Color.Black)
             }
             OutlinedButton(onClick = { navigator.navigate(SavedEstimationsScreenDestination) }) {
-                Text(text = "Zobacz Zapisane")
+                Text(text = "Zobacz Zapisane", color = Color.Black)
             }
             OutlinedButton(onClick = {
                 locationPermissionResultLauncher.launch(
@@ -53,11 +64,11 @@ fun GeneralScreen(navigator: DestinationsNavigator) {
                     )
                 )
             }) {
-                Text(text = "Pokaż mapę")
+                Text(text = "Pokaż mapę", color = Color.Black)
             }
             OutlinedButton(onClick = {
             }) {
-                Text(text = "USTAWIENIA")
+                Text(text = "USTAWIENIA", color = Color.Black)
             }
         }
     }

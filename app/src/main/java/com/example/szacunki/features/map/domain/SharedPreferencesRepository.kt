@@ -1,6 +1,8 @@
 package com.example.szacunki.features.map.domain
 
+import com.example.szacunki.features.map.presentation.model.CameraState
+
 interface SharedPreferencesRepository {
-    suspend fun saveLastLocation(latitude: Double, longitude: Double)
-    suspend fun loadLastLocation(): Pair<Double, Double>
+    suspend fun saveCameraState(cameraState: CameraState)
+    suspend fun loadCameraState(): CameraState
 }

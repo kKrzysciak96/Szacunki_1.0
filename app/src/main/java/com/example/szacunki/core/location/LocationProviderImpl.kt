@@ -38,7 +38,7 @@ class LocationProviderImpl(
 
     //    fun isNetworkEnabled() = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     @SuppressLint("MissingPermission")
-    override fun getCurrentLocationFlow(interval: Long): Flow<Location> {
+    override fun getCurrentLocation(interval: Long): Flow<Location> {
         return callbackFlow {
             if (!context.hasLocationPermission()) {
 //                throw LocationProvider.LocationException("Missing location permission")
