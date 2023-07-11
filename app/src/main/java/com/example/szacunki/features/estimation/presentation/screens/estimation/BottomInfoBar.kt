@@ -1,8 +1,10 @@
 package com.example.szacunki.features.estimation.presentation.screens.estimation
 
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
@@ -70,11 +73,22 @@ fun BottomInfoBar(
                         .height(40.dp)
                         .width(40.dp)
                         .background(color2)
-                        .clickable {
-
-                            val path = PdfGenerator.generatePdf(context, estimation.value)
-                            val navArg = PdfViewerScreenDestination.NavArgs(path = path)
-                            navigator.navigate(PdfViewerScreenDestination(navArg))
+                        .pointerInput(Unit) {
+                            detectTapGestures(
+                                onLongPress = {
+                                    val path = PdfGenerator.generatePdf(context, estimation.value)
+                                    val navArg = PdfViewerScreenDestination.NavArgs(path = path)
+                                    navigator.navigate(PdfViewerScreenDestination(navArg))
+                                },
+                                onTap = {
+                                    Toast
+                                        .makeText(
+                                            context,
+                                            "Przytrzymaj",
+                                            Toast.LENGTH_LONG
+                                        )
+                                        .show()
+                                })
                         }
                 )
                 Box(
@@ -164,7 +178,21 @@ fun BottomInfoBar(
                         .height(40.dp)
                         .width(40.dp)
                         .background(color2)
-                        .clickable { memoState.value = true }
+                        .pointerInput(Unit) {
+                            detectTapGestures(
+                                onLongPress = {
+                                    memoState.value = true
+                                },
+                                onTap = {
+                                    Toast
+                                        .makeText(
+                                            context,
+                                            "Przytrzymaj",
+                                            Toast.LENGTH_LONG
+                                        )
+                                        .show()
+                                })
+                        }
                 )
             }
         }
