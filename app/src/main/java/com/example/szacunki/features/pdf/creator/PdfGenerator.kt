@@ -23,15 +23,27 @@ import com.itextpdf.layout.property.TextAlignment
 import com.itextpdf.layout.property.UnitValue
 import java.io.File
 import java.io.FileOutputStream
+import java.nio.file.Files
+import java.nio.file.Paths
+import kotlin.io.path.exists
 
 object PdfGenerator {
 
     fun generatePdf(context: Context, estimation: EstimationDisplayable): String {
 
+        val dirPath = "/data/data/com.example.szacunki/files/estimationPdf"
+        val dirFilePath = if (Paths.get(dirPath).exists()) {
+            Paths.get(dirPath)
+        } else {
+            Files.createDirectory(Paths.get(dirPath))
+        }
+
         val fileName = estimation.sectionNumber + "_" + estimation.date.toLocalDateTime()
             .prepareDateToSave() + ".pdf"
-        val filePath = context.filesDir
-        val file = File(filePath, fileName)
+//        val filePath = context.filesDir
+//        val file = File(filePath, fileName)
+
+        val file = File(dirFilePath.toFile(), fileName)
 
         val fOut = FileOutputStream(file)
 

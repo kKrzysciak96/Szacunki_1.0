@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.szacunki.core.calculations.color1
+import com.example.szacunki.core.calculations.color2
 import com.example.szacunki.core.calculations.createEstimationToUpdateTreeNames
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
 import com.example.szacunki.features.estimation.presentation.model.baseNameList
@@ -61,7 +62,12 @@ fun AddSingleTreeDialog(
                             Text(
                                 text = "Wpisz nazwę drzewa"
                             )
-                        })
+                        },
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = color2,
+                            focusedLabelColor = color2
+                        )
+                    )
                     OutlinedButton(
                         onClick = {
                             val newEstimation = createEstimationToUpdateTreeNames(
@@ -75,12 +81,18 @@ fun AddSingleTreeDialog(
                             onDismissRequest()
                         },
                         enabled = newTreeName.value.isNotBlank(),
+                        colors = ButtonDefaults.buttonColors(
+                            contentColor = Color.Black,
+                            disabledContentColor = Color.Gray,
+                            backgroundColor = Color.White,
+                            disabledBackgroundColor = Color.LightGray
+                        ),
                         modifier = Modifier.padding(top = 10.dp, bottom = 10.dp)
                     ) {
                         Text(
                             text = "Dodaj",
                             modifier = Modifier,
-                            style = MaterialTheme.typography.h5
+                            style = MaterialTheme.typography.h5,
                         )
                     }
                     Divider(

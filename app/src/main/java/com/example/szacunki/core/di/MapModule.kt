@@ -1,7 +1,7 @@
 package com.example.szacunki.core.di
 
 import com.example.szacunki.features.map.data.MapRepositoryImpl
-import com.example.szacunki.features.map.data.model.SharedPreferencesRepositoryImpl
+import com.example.szacunki.features.map.data.SharedPreferencesRepositoryImpl
 import com.example.szacunki.features.map.domain.MapRepository
 import com.example.szacunki.features.map.domain.SharedPreferencesRepository
 import com.example.szacunki.features.map.presentation.screen.MapViewModel

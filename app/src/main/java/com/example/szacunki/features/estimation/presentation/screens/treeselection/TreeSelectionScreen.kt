@@ -8,10 +8,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -21,6 +18,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.szacunki.core.calculations.color1
+import com.example.szacunki.core.calculations.color2
+import com.example.szacunki.core.calculations.color4
+import com.example.szacunki.core.composablefunctions.GradientBackground
 import com.example.szacunki.destinations.EstimationScreenDestination
 import com.example.szacunki.features.estimation.presentation.model.baseNameList
 import com.ramcosta.composedestinations.annotation.Destination
@@ -36,7 +36,11 @@ fun TreeSelectionScreen(
     val treeList = rememberSaveable { mutableStateOf(listOf<String>()) }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                GradientBackground(colorList = listOf(Color.White, color1, color2))
+            ),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -62,7 +66,7 @@ fun TreeSelectionScreen(
                     Box(contentAlignment = Alignment.Center,
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(color = if (isChecked.value) color1 else Color.White)
+                            .background(color = if (isChecked.value) color4 else Color.White)
                             .clickable {
                                 isChecked.value = !isChecked.value
                                 if (isChecked.value) {
@@ -85,19 +89,29 @@ fun TreeSelectionScreen(
             }
         }
         if (sectionNumber != null) {
-            OutlinedButton(onClick = {
-                val navArg = EstimationScreenDestination.NavArgs(
-                    id = null,
-                    sectionNumber = sectionNumber,
-                    treeNames = treeList.value.toTypedArray()
-                )
-                navigator.popBackStack()
-                navigator.navigate(EstimationScreenDestination(navArg))
-            }, enabled = treeList.value.isNotEmpty(), modifier = Modifier.padding(top = 20.dp)) {
+            OutlinedButton(
+                onClick = {
+                    val navArg = EstimationScreenDestination.NavArgs(
+                        id = null,
+                        sectionNumber = sectionNumber,
+                        treeNames = treeList.value.toTypedArray()
+                    )
+                    navigator.popBackStack()
+                    navigator.navigate(EstimationScreenDestination(navArg))
+                },
+                enabled = treeList.value.isNotEmpty(),
+                colors = ButtonDefaults.buttonColors(
+                    contentColor = Color.Black,
+                    disabledContentColor = Color.Gray,
+                    backgroundColor = Color.White,
+                    disabledBackgroundColor = Color.LightGray
+                ),
+                modifier = Modifier.padding(top = 20.dp)
+            ) {
                 Text(
                     text = "Rozpocznij pracę",
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.h5
+                    style = MaterialTheme.typography.h5,
                 )
             }
         }

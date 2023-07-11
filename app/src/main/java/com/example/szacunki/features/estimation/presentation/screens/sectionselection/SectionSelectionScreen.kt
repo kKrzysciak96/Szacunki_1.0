@@ -4,18 +4,20 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.szacunki.core.calculations.color1
+import com.example.szacunki.core.calculations.color2
+import com.example.szacunki.core.composablefunctions.GradientBackground
 import com.example.szacunki.destinations.TreeSelectionScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -30,7 +32,9 @@ fun SectionSelectionScreen(navigator: DestinationsNavigator) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = color1), contentAlignment = Alignment.TopCenter
+            .background(
+                GradientBackground(colorList = listOf(Color.White, color1, color2))
+            ), contentAlignment = Alignment.TopCenter
     ) {
         Column(
             verticalArrangement = Arrangement.Center,
@@ -41,6 +45,10 @@ fun SectionSelectionScreen(navigator: DestinationsNavigator) {
                 value = text.value,
                 onValueChange = { text.value = it },
                 label = { Text(text = "Wpisz numer oddziału") },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = color2,
+                    focusedLabelColor = color2
+                ),
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
@@ -57,8 +65,17 @@ fun SectionSelectionScreen(navigator: DestinationsNavigator) {
             OutlinedButton(
                 onClick = { onConfirmation(text.value, navigator) },
                 enabled = text.value.isNotBlank(),
+                colors = ButtonDefaults.buttonColors(
+                    contentColor = Color.Black,
+                    disabledContentColor = Color.Gray,
+                    backgroundColor = Color.White,
+                    disabledBackgroundColor = Color.LightGray
+                )
             ) {
-                Text(text = "Potwierdź")
+                Text(
+                    text = "Potwierdź", textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.h5,
+                )
             }
         }
 

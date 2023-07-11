@@ -1,4 +1,4 @@
-package com.example.szacunki.features.map.data.model
+package com.example.szacunki.features.map.data
 
 import android.content.Context
 import android.content.SharedPreferences

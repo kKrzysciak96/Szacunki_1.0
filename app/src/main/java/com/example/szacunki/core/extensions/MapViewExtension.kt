@@ -122,6 +122,16 @@ fun MapView.removeOldMarker(geoNote: GeoNoteDisplayable) {
     }
 }
 
+fun MapView.removeALLOldMarkers() {
+    this.overlays.forEach { predicate ->
+        if (predicate is CustomMarker) {
+            predicate.closeInfoWindow()
+            this.overlays.remove(predicate)
+        }
+    }
+}
+
+
 fun MapView.addMarker(marker: Marker) {
     overlays.add(marker)
 }
@@ -130,10 +140,10 @@ fun MapView.addMarkerToMap(
     context: Context,
     geoNote: GeoNoteDisplayable,
     onLongPress: (GeoNoteDisplayable) -> Unit,
-    onLongInfoWindowListener: (UUID) -> Unit
+    onLongPressInfoWindowListener: (UUID) -> Unit
 ) {
     val marker = this.createCustomMarker(geoNote, onLongPress)
-    marker.adjustCustomMarker(this, geoNote, context, onLongInfoWindowListener)
+    marker.adjustCustomMarker(this, geoNote, context, onLongPressInfoWindowListener)
     this.addMarker(marker)
     invalidate()
 }

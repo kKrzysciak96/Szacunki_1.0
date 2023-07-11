@@ -1,6 +1,7 @@
 package com.example.szacunki.features.estimation.presentation.screens.saved
 
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,6 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import com.example.szacunki.R
 import com.example.szacunki.core.calculations.color1
@@ -32,6 +34,9 @@ import com.example.szacunki.features.pdf.creator.PdfGenerator.generatePdf
 import com.example.szacunki.features.pdf.viewer.share
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.getViewModel
 import java.io.File
 import java.util.*
@@ -268,10 +273,46 @@ fun EstimationView(name: String, date: Date, modifier: Modifier = Modifier) {
 
 @Composable
 fun SavedEstimationsBottomBar(viewModel: SavedEstimationsViewModel) {
-    BottomAppBar(modifier = Modifier.fillMaxWidth(), backgroundColor = color2) {
+    var folderSize by remember { mutableStateOf("") }
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    BottomAppBar(
+        modifier = Modifier
+            .fillMaxWidth(), backgroundColor = color2
+    ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Button(onClick = { viewModel.dropDataBase() }) {
-                Text(text = "Drop DataBase")
+            OutlinedButton(
+                onClick = {
+                    scope.launch {
+                        val folderPath =
+                            context.filesDir.absolutePath + File.separator + "estimationPdf"
+                        val size = withContext(Dispatchers.IO) {
+                            calculateFolderSize(folderPath, context)
+                        }
+                        folderSize = formatSize(size)
+                        withContext(Dispatchers.IO) {
+                            deleteSavedPdfs(File(folderPath))
+                        }
+                        Toast
+                            .makeText(
+                                context,
+                                "Zwolniono $folderSize pamięci",
+                                Toast.LENGTH_LONG
+                            )
+                            .show()
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(200.dp)
+                    .padding(top = 10.dp, bottom = 10.dp)
+
+            ) {
+                Text(
+                    text = "Usuń stare Pdf-y",
+                    fontSize = 14.sp,
+                    color = Color.Black
+                )
             }
         }
     }

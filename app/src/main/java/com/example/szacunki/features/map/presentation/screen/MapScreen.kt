@@ -254,7 +254,9 @@ fun redrawMapView(
     isDeleteMarkerDialogVisible: MutableState<Boolean>,
     isObjectDialogVisible: MutableState<Boolean>
 ) {
+    mapView.invalidate()
     geoNotes.value.forEach { geoNote ->
+        Log.d("REDRAW", "GEONOTE ${geoNote.id}")
         mapView.removeOldMarker(geoNote)
         mapView.apply {
             addMarkerToMap(context = context, geoNote = geoNote, onLongPress = {
@@ -265,12 +267,10 @@ fun redrawMapView(
                     )
                 )
                 isDeleteMarkerDialogVisible.value = true
-            }, onLongInfoWindowListener = {
+            }, onLongPressInfoWindowListener = {
                 chosenInfoWindowId.value = it
                 isObjectDialogVisible.value = true
             })
         }
-
-
     }
 }

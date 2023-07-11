@@ -119,7 +119,8 @@ fun performAddition(
 val color1 = Color(0xff1e966e)
 val color2 = Color(0xff04704c)
 val color3 = Color(0xff2debab)
-val color4 = Color.White
+val color4 = Color(0xff70c5ad)
+
 
 fun createNewTreeDisplayable(treeName: String): TreeDisplayable {
     return TreeDisplayable(name = treeName)

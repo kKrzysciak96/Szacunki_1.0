@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import com.example.szacunki.core.calculations.color1
 import com.example.szacunki.core.calculations.color2
 import com.example.szacunki.core.composablefunctions.GradientBackground
+import com.example.szacunki.destinations.FolderSizeCalculatorScreenDestination
 import com.example.szacunki.destinations.MapScreenDestination
 import com.example.szacunki.destinations.SavedEstimationsScreenDestination
 import com.example.szacunki.destinations.SectionSelectionScreenDestination
@@ -67,6 +68,7 @@ fun GeneralScreen(navigator: DestinationsNavigator) {
                 Text(text = "Pokaż mapę", color = Color.Black)
             }
             OutlinedButton(onClick = {
+                navigator.navigate(FolderSizeCalculatorScreenDestination)
             }) {
                 Text(text = "USTAWIENIA", color = Color.Black)
             }
