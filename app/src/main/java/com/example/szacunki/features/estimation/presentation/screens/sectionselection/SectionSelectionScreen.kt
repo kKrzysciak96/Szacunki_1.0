@@ -22,7 +22,6 @@ import com.example.szacunki.destinations.TreeSelectionScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
-
 @Destination(route = "SectionSelectionScreen")
 @Composable
 fun SectionSelectionScreen(navigator: DestinationsNavigator) {
@@ -33,7 +32,13 @@ fun SectionSelectionScreen(navigator: DestinationsNavigator) {
         modifier = Modifier
             .fillMaxSize()
             .background(
-                GradientBackground(colorList = listOf(Color.White, color1, color2))
+                GradientBackground(
+                    colorList = listOf(
+                        Color.White,
+                        color1,
+                        color2
+                    )
+                ) // do pliku Color
             ), contentAlignment = Alignment.TopCenter
     ) {
         Column(
@@ -82,9 +87,17 @@ fun SectionSelectionScreen(navigator: DestinationsNavigator) {
     }
 }
 
+/**
+ * TODO
+ * Nie potrzebujesz dodawać NavArgs automatycznie ci to doda przeciążona funkcja invoke
+ * @see TreeSelectionScreenDestination
+ * private fun DestinationsNavigator.onConfirmation(text: String) = popBackStack().also { navigate(TreeSelectionScreenDestination(text)) }
+ */
+
 fun onConfirmation(text: String, navigator: DestinationsNavigator) {
     val navArg =
         TreeSelectionScreenDestination.NavArgs(text)
     navigator.popBackStack()
     navigator.navigate(TreeSelectionScreenDestination(navArg))
 }
+

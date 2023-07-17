@@ -29,9 +29,10 @@ import kotlin.io.path.exists
 
 object PdfGenerator {
 
+
     fun generatePdf(context: Context, estimation: EstimationDisplayable): String {
 
-        val dirPath = "/data/data/com.example.szacunki/files/estimationPdf"
+        val dirPath = "/data/data/com.example.szacunki/files/estimationPdf" // do const vala to
         val dirFilePath = if (Paths.get(dirPath).exists()) {
             Paths.get(dirPath)
         } else {
@@ -39,7 +40,7 @@ object PdfGenerator {
         }
 
         val fileName = estimation.sectionNumber + "_" + estimation.date.toLocalDateTime()
-            .prepareDateToSave() + ".pdf"
+            .prepareDateToSave() + ".pdf" // może extension ?
 //        val filePath = context.filesDir
 //        val file = File(filePath, fileName)
 

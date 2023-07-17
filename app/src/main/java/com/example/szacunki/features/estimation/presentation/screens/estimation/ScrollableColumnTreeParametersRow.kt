@@ -120,6 +120,7 @@ fun TreeParametersRow(
             addMode = true,
             modifier = Modifier.padding(end = 20.dp)
         )
+        // Wyrzuc to do opisanej funkcji
         Box(contentAlignment = Alignment.Center, modifier = Modifier
             .size(50.dp)
             .clickable {
@@ -150,7 +151,7 @@ fun TreeParametersRow(
     }
 }
 
-
+// Rob private jezeli nie potrzebujesz tego gdzi indziej
 @Composable
 fun HeightDropdownMenu(
     isHeightDropdownMenuVisible: State<Boolean>,

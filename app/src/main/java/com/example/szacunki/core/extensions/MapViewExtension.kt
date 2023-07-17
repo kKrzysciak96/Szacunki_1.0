@@ -59,7 +59,6 @@ fun MapView.goToPosition(location: Location?) {
     )
 }
 
-
 fun MapView.goToPosition(geoPoint: GeoPoint?) {
     this.controller.animateTo(
         GeoPoint(
@@ -75,9 +74,6 @@ fun MapView.goToPosition(geoPoint: GeoPoint?, zoom: Double) {
         ), zoom, 500L
     )
 }
-
-
-
 
 fun MapView.createCustomMarker(
     geoNote: GeoNoteDisplayable, onLongPress: (GeoNoteDisplayable) -> Unit
@@ -130,7 +126,6 @@ fun MapView.removeALLOldMarkers() {
         }
     }
 }
-
 
 fun MapView.addMarker(marker: Marker) {
     overlays.add(marker)
@@ -218,7 +213,6 @@ class CustomInfoWindow(
             this.close()
         }
     }
-
     override fun onClose() {
     }
 }

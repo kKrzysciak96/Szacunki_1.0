@@ -13,14 +13,12 @@ class SavedEstimationsViewModel(private val estimationRepository: EstimationRepo
 
     var estimations = getAllEstimations()
 
-
     private fun getAllEstimations() = estimationRepository.getAllEstimationsFromLocal()
         .map { estimationDomain -> estimationDomain.map { EstimationDisplayable(it) } }
 
 
     private var _estimationFlow = MutableStateFlow<EstimationDisplayable?>(null)
     val estimationFlow = _estimationFlow.asStateFlow()
-
 
     fun getSingleEstimation(id: UUID) {
         viewModelScope.launch {

@@ -82,7 +82,7 @@ fun DialogToUpdateObject(
 
     ) {
     Dialog(onDismissRequest = { onDismiss(geoNoteToUpdate.latitude, geoNoteToUpdate.longitude) }) {
-        Card() {
+        Card {
             Box(contentAlignment = Alignment.Center) {
                 Column(
                     modifier = Modifier.padding(20.dp),

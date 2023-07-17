@@ -37,8 +37,6 @@ fun PdfViewerScreen(path: String) {
         isZoomEnable = true
     )
 
-
-
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -53,7 +51,7 @@ fun PdfViewerScreen(path: String) {
                 onClick = {
                     uri = FileProvider.getUriForFile(
                         context,
-                        "com.example.szacunki.fileprovider",
+                        "com.example.szacunki.filecprovider",
                         file
                     )
                     share(uri, context)

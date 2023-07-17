@@ -20,10 +20,7 @@ import java.util.*
 @Destination(route = "EstimationScreen")
 @Composable
 fun EstimationScreen(
-    id: UUID?,
-    sectionNumber: String?,
-    treeNames: Array<String>?,
-    navigator: DestinationsNavigator
+    id: UUID?, sectionNumber: String?, treeNames: Array<String>?, navigator: DestinationsNavigator
 ) {
     val currentIDState = rememberSaveable { mutableStateOf(id) }
     val treeIndexState = rememberSaveable { mutableStateOf(0) }
@@ -39,13 +36,17 @@ fun EstimationScreen(
     val scope = rememberCoroutineScope()
     val keyToScrollTopAppBarAfterTreeIsAdded = rememberSaveable { mutableStateOf(false) }
 
-    LaunchedEffect(key1 = Unit) {
-        currentIDState.value?.let {
-            viewModel.onIdPassed(it)
-        } ?: viewModel.createNewSheet(
-            sectionNumber, treeNames?.toList()
-        ).also { currentIDState.value = viewModel.estimationFlow.value?.id }
-    }
+    LaunchedEffect(
+        key1 = Unit,
+        block = {
+            currentIDState.value?.let {
+                viewModel.onIdPassed(it)
+            } ?: viewModel.createNewSheet(
+                sectionNumber, treeNames?.toList()
+            ).also { currentIDState.value = viewModel.estimationFlow.value?.id }
+        })
+
+
 
     LaunchedEffect(
         key1 = keyToScrollTopAppBarAfterTreeIsAdded.value,
@@ -60,75 +61,69 @@ fun EstimationScreen(
 
 
     if (estimation.value != null) {
-        Scaffold(
-            topBar = {
-                TreeNamesTopBar(
+        Scaffold(topBar = {
+            TreeNamesTopBar(
+                estimation = estimation as State<EstimationDisplayable>,
+                viewModel = viewModel,
+                treeIndexState = treeIndexState,
+                treeNameState = treeNameState,
+                listState = listState,
+                scope = scope
+            )
+        }, bottomBar = {
+            BottomInfoBar(
+                estimation = estimation as State<EstimationDisplayable>,
+                memoState = memoState,
+                context = context,
+                navigator = navigator,
+                treeIndexState = treeIndexState,
+                listState = listState,
+                scope = scope
+
+            )
+        }, content = {
+            if (classesDialogState.value) {
+                AllTreeClassesDialog(
+                    estimation = estimation as State<EstimationDisplayable>,
+                    treeIndex = treeIndexState.value,
+                    diameterIndex = diameterIndexState.value,
+                    viewModel = viewModel,
+                    onDismissRequest = { classesDialogState.value = false },
+                )
+            }
+
+            if (treeNameState.value) {
+                AddSingleTreeDialog(viewModel = viewModel,
+                    estimation = estimation as State<EstimationDisplayable>,
+                    treeIndexState = treeIndexState,
+                    listState = listState,
+                    scope = scope,
+                    onDismissRequest = {
+                        keyToScrollTopAppBarAfterTreeIsAdded.value = true
+                        treeNameState.value = false
+                    })
+            }
+            if (memoState.value) {
+                MemoDialog(
+                    estimation = estimation as State<EstimationDisplayable>,
+                    viewModel = viewModel
+                ) {
+                    memoState.value = false
+                }
+            }
+
+            Column(modifier = Modifier.fillMaxSize()) {
+                TitleParametersRow(index = treeIndexState.value)
+                ScrollableColumnTreeParametersRow(
                     estimation = estimation as State<EstimationDisplayable>,
                     viewModel = viewModel,
-                    treeIndexState = treeIndexState,
-                    treeNameState = treeNameState,
-                    listState = listState,
-                    scope = scope
+                    treeIndex = treeIndexState,
+                    diameterIndexState = diameterIndexState,
+                    classesDialogState = classesDialogState
                 )
-            },
-            bottomBar = {
-                BottomInfoBar(
-                    estimation = estimation as State<EstimationDisplayable>,
-                    memoState = memoState,
-                    context = context,
-                    navigator = navigator,
-                    treeIndexState = treeIndexState,
-                    listState = listState,
-                    scope = scope
-
-                )
-            },
-            content = {
-                if (classesDialogState.value) {
-                    AllTreeClassesDialog(
-                        estimation = estimation as State<EstimationDisplayable>,
-                        treeIndex = treeIndexState.value,
-                        diameterIndex = diameterIndexState.value,
-                        viewModel = viewModel,
-                        onDismissRequest = { classesDialogState.value = false },
-                    )
-                }
-
-                if (treeNameState.value) {
-                    AddSingleTreeDialog(
-                        viewModel = viewModel,
-                        estimation = estimation as State<EstimationDisplayable>,
-                        treeIndexState = treeIndexState,
-                        listState = listState,
-                        scope = scope,
-                        onDismissRequest = {
-                            keyToScrollTopAppBarAfterTreeIsAdded.value = true
-                            treeNameState.value = false
-                        }
-                    )
-                }
-                if (memoState.value) {
-                    MemoDialog(
-                        estimation = estimation as State<EstimationDisplayable>,
-                        viewModel = viewModel
-                    ) {
-                        memoState.value = false
-                    }
-                }
-
-                Column(modifier = Modifier.fillMaxSize()) {
-                    TitleParametersRow(index = treeIndexState.value)
-                    ScrollableColumnTreeParametersRow(
-                        estimation = estimation as State<EstimationDisplayable>,
-                        viewModel = viewModel,
-                        treeIndex = treeIndexState,
-                        diameterIndexState = diameterIndexState,
-                        classesDialogState = classesDialogState
-                    )
-                }
-                it
             }
-        )
+            it
+        })
     }
 
 }

@@ -73,9 +73,7 @@ fun CustomMapView(mapView: MapView) {
 
     val infiniteTransition = rememberInfiniteTransition()
     val angle by infiniteTransition.animateFloat(
-        initialValue = 0F,
-        targetValue = 360F,
-        animationSpec = infiniteRepeatable(
+        initialValue = 0F, targetValue = 360F, animationSpec = infiniteRepeatable(
             animation = tween(2000, easing = LinearEasing)
         )
     )
@@ -120,8 +118,7 @@ fun CustomMapView(mapView: MapView) {
                 })
         }
         if (!isObjectToUpdateDialogVisible.value && !isObjectOnMapClickedDialogVisible.value && isDeleteMarkerDialogVisible.value) {
-            MarkerDeleteDialog(
-                mapView = mapView,
+            MarkerDeleteDialog(mapView = mapView,
                 id = chosenMarkerId.value,
                 viewModel = viewModel,
                 onDismiss = {
@@ -129,15 +126,11 @@ fun CustomMapView(mapView: MapView) {
                 })
         }
 
-        AndroidView(
-            factory = { mapView },
-            modifier = Modifier.fillMaxSize(),
-            update = {
-                it.apply {
-                    Log.d("ANDROIDVIEW", "UPDATE")
-                }
+        AndroidView(factory = { mapView }, modifier = Modifier.fillMaxSize(), update = {
+            it.apply {
+                Log.d("ANDROIDVIEW", "UPDATE")
             }
-        )
+        })
         LaunchedEffect(key1 = locationToZoom.value, block = {
             mapView.goToPosition(locationToZoom.value, cameraState.value.zoom)
         })
@@ -148,8 +141,7 @@ fun CustomMapView(mapView: MapView) {
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .padding(top = 5.dp)
-            )
-            {
+            ) {
                 Text(
                     text = "${currentLocation.value.latitude} ${currentLocation.value.longitude}",
                     color = Color.Black,
@@ -157,17 +149,16 @@ fun CustomMapView(mapView: MapView) {
                 )
             }
         } else {
-            Icon(
-                imageVector = ImageVector.vectorResource(id = R.drawable.ic_refresh),
+            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.ic_refresh),
                 contentDescription = null,
                 modifier = Modifier
                     .graphicsLayer {
                         rotationZ = angle
                     }
                     .align(Alignment.TopCenter)
-                    .size(50.dp)
-            )
+                    .size(50.dp))
         }
+        // Zoptymalizuj to wyodrębinając to do jakiegoś wspólnego elementu np BaseMapIcon
         IconButton(
             onClick = {
                 mapView.refreshLocation()
@@ -235,9 +226,7 @@ fun CustomMapView(mapView: MapView) {
             })
             val listener: MapListener = CustomMapListener {
                 viewModel.updateCameraState(
-                    mapCenter.latitude,
-                    mapCenter.longitude,
-                    zoomLevelDouble
+                    mapCenter.latitude, mapCenter.longitude, zoomLevelDouble
                 )
             }
             addMapListener(listener)

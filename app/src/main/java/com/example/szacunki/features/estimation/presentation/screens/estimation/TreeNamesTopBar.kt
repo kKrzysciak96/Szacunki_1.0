@@ -43,8 +43,6 @@ fun TreeNamesTopBar(
     scope: CoroutineScope
 
 ) {
-
-
     val snapBehavior = rememberSnapFlingBehavior(lazyListState = listState)
 
     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {

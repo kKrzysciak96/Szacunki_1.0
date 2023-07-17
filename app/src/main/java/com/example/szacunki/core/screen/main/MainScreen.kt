@@ -1,4 +1,4 @@
-package com.example.szacunki.core.screen
+package com.example.szacunki.core.screen.main
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.rememberNavController

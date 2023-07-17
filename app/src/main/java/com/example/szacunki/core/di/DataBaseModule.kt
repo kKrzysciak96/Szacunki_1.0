@@ -8,7 +8,7 @@ import org.koin.dsl.module
 val dataBaseModule = module {
     single {
         Room.databaseBuilder(androidContext(), EstimationDataBase::class.java, "data-base")
-            .fallbackToDestructiveMigration().build()
+            .build()
     }
     factory { get<EstimationDataBase>().provideEstimationDao() }
     factory { get<EstimationDataBase>().provideGeoNoteDao() }

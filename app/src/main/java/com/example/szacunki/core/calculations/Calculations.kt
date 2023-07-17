@@ -116,6 +116,7 @@ fun performAddition(
     }
 }
 
+//////////////////////////////////////wrzuć do ui.theme
 val color1 = Color(0xff1e966e)
 val color2 = Color(0xff04704c)
 val color3 = Color(0xff2debab)
@@ -175,4 +176,5 @@ fun updateEstimationMemo(
 }
 
 
-
+///przerób na extensiony
+fun EstimationDisplayable.updateEstimationMemo(memo: String) = copy(memo = memo)

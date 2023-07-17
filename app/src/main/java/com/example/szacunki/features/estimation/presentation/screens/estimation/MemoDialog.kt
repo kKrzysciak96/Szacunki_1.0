@@ -34,9 +34,12 @@ fun MemoDialog(
                     OutlinedTextField(
                         value = estimation.value.memo,
                         onValueChange = {
-                            val newEstimation =
-                                updateEstimationMemo(estimation = estimation, memo = it)
-                            viewModel.updateEstimationFlow(newEstimation)
+                            viewModel.updateEstimationFlow(
+                                updateEstimationMemo(
+                                    estimation = estimation,
+                                    memo = it
+                                )
+                            )
                         },
                         modifier = Modifier.size(300.dp),
                         label = { Text(text = "Wpisz Notatke") },

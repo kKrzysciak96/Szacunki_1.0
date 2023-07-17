@@ -99,7 +99,7 @@ class MapViewModel(
     }
 
     private fun saveCameraState() {
-        GlobalScope.launch {
+        GlobalScope.launch {// Stwórz sobie globalnego scopa dla swojej aplikacji(koin) lub poczytaj o co kaman z tym GlobalScopem chodzi
             withContext(Dispatchers.IO) {
                 sharedPreferencesRepository.saveCameraState(
                     CameraState(
@@ -116,9 +116,9 @@ class MapViewModel(
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 mapRepository.getAllGeoNotesFromLocal()
-                    .map { geoNotesList -> geoNotesList.map { GeoNoteDisplayable(it) } }.collect() {
-                    _geoNotes.value = it
-                }
+                    .map { geoNotesList -> geoNotesList.map { GeoNoteDisplayable(it) } }.collect {
+                        _geoNotes.value = it
+                    }
 
             }
         }

@@ -139,7 +139,7 @@ fun EstimationRow(
         }
         true
     })
-    dismissState.currentValue
+
     SwipeToDismiss(
         state = dismissState,
         background = {
@@ -293,12 +293,11 @@ fun SavedEstimationsBottomBar(viewModel: SavedEstimationsViewModel) {
                         withContext(Dispatchers.IO) {
                             deleteSavedPdfs(File(folderPath))
                         }
-                        Toast
-                            .makeText(
-                                context,
-                                "Zwolniono $folderSize pamięci",
-                                Toast.LENGTH_LONG
-                            )
+                        Toast.makeText(
+                            context,
+                            "Zwolniono $folderSize pamięci",
+                            Toast.LENGTH_LONG
+                        )
                             .show()
                     }
                 },

@@ -25,18 +25,28 @@ import com.example.szacunki.features.map.presentation.screen.MapViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @RootNavGraph(start = true)
 @Destination(route = "GeneralScreen")
 @Composable
-fun GeneralScreen(navigator: DestinationsNavigator) {
-    val viewModel = getViewModel<MapViewModel>()
+fun GeneralScreen(navigator: DestinationsNavigator, viewModel: MapViewModel = koinViewModel()) {
+
+//    GeneralScreen(navigateToMapScreen =  navigator::navigateToMapScreen )
+    GeneralScreen(navigator = navigator)
+}
+
+// wstrzyknij do konstruktora viewModel
+@Composable
+private fun GeneralScreen(navigator: DestinationsNavigator) {
+
     val locationPermissionResultLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestMultiplePermissions(),
             onResult = { isGranted ->
                 if (isGranted[Manifest.permission.ACCESS_COARSE_LOCATION] == true && isGranted[Manifest.permission.ACCESS_FINE_LOCATION] == true) {
+//                    navigateToMapScreen()
                     navigator.navigateToMapScreen()
+                    //TODO
                 }
             })
     Box(
@@ -76,6 +86,7 @@ fun GeneralScreen(navigator: DestinationsNavigator) {
     }
 }
 
+// zrób private
 fun DestinationsNavigator.navigateToMapScreen() {
     this.navigate(MapScreenDestination)
 }

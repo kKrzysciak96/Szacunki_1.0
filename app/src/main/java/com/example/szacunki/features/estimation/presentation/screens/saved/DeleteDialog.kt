@@ -14,16 +14,14 @@ import androidx.compose.ui.window.Dialog
 import com.example.szacunki.core.calculations.color2
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
 
-
 @Composable
 fun DeleteDialog(
     estimation: EstimationDisplayable,
     viewModel: SavedEstimationsViewModel,
     onDismiss: () -> Unit
 ) {
-
     Dialog(onDismissRequest = { onDismiss() }) {
-        Card() {
+        Card {
             Box(contentAlignment = Alignment.Center) {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
