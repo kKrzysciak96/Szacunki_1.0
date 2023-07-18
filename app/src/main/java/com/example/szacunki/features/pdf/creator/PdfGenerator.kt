@@ -1,12 +1,12 @@
 package com.example.szacunki.features.pdf.creator
 
 import android.content.Context
-import com.example.szacunki.core.calculations.color2
 import com.example.szacunki.core.extensions.prepareDateToDisplay
 import com.example.szacunki.core.extensions.prepareDateToSave
 import com.example.szacunki.core.extensions.toLocalDateTime
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
 import com.example.szacunki.features.estimation.presentation.model.TreeDisplayable
+import com.example.szacunki.ui.theme.color2
 import com.itextpdf.io.font.FontProgramFactory
 import com.itextpdf.kernel.colors.Color
 import com.itextpdf.kernel.colors.ColorConstants
@@ -53,7 +53,7 @@ object PdfGenerator {
         val pdfDocument = PdfDocument(pdfWriter)
         val layoutDocument = Document(pdfDocument)
 
-        val fontProgram = FontProgramFactory.createFont();
+        val fontProgram = FontProgramFactory.createFont()
         val font = PdfFontFactory.createFont(fontProgram, "CP1250")
         val memo = "Notatka Służbowa:"
         //set font with  polish characters

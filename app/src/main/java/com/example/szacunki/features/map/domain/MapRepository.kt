@@ -11,6 +11,4 @@ interface MapRepository {
     suspend fun updateGeoNote(geoNoteDomain: GeoNoteDomain)
     suspend fun deleteGeoNote(id: UUID)
     suspend fun dropDataBase()
-
-
 }

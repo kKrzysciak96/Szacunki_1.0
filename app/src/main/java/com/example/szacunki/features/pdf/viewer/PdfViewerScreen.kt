@@ -19,7 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.FileProvider
-import com.example.szacunki.core.calculations.color2
+import com.example.szacunki.ui.theme.color2
 import com.ramcosta.composedestinations.annotation.Destination
 import com.rizzi.bouquet.ResourceType
 import com.rizzi.bouquet.VerticalPDFReader
@@ -36,7 +36,6 @@ fun PdfViewerScreen(path: String) {
         resource = ResourceType.Local(uri),
         isZoomEnable = true
     )
-
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -54,7 +53,7 @@ fun PdfViewerScreen(path: String) {
                         "com.example.szacunki.filecprovider",
                         file
                     )
-                    share(uri, context)
+                    shareFile(uri, context)
                 },
                 backgroundColor = color2,
                 modifier = Modifier
@@ -71,12 +70,10 @@ fun PdfViewerScreen(path: String) {
 }
 
 
-fun share(uri: Uri, context: Context) {
-
+fun shareFile(uri: Uri, context: Context) {
     val intent = Intent()
     intent.action = Intent.ACTION_SEND
     intent.type = "application/pdf"
     intent.putExtra(Intent.EXTRA_STREAM, uri)
-
     startActivity(context, intent, null)
 }

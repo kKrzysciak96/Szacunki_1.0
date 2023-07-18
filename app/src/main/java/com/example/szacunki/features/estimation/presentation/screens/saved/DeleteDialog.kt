@@ -8,16 +8,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.example.szacunki.core.calculations.color2
+import com.example.szacunki.R
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
+import com.example.szacunki.ui.theme.color2
 
 @Composable
 fun DeleteDialog(
     estimation: EstimationDisplayable,
-    viewModel: SavedEstimationsViewModel,
+    deleteEstimation: (EstimationDisplayable) -> Unit,
     onDismiss: () -> Unit
 ) {
     Dialog(onDismissRequest = { onDismiss() }) {
@@ -29,7 +31,7 @@ fun DeleteDialog(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Czy napewno usunąć dokument?",
+                        text = stringResource(id = R.string.hint16),
                         style = MaterialTheme.typography.h6,
                         modifier = Modifier.padding(5.dp),
                         textAlign = TextAlign.Center
@@ -41,11 +43,14 @@ fun DeleteDialog(
                             colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
                             border = BorderStroke(width = 1.dp, color = Color.Black),
                             onClick = {
-                                viewModel.deleteEstimation(estimationDisplayable = estimation)
+                                deleteEstimation(estimation)
                                 onDismiss()
                             })
                         {
-                            Text(text = "USUŃ", style = MaterialTheme.typography.h5)
+                            Text(
+                                text = stringResource(id = R.string.hint17),
+                                style = MaterialTheme.typography.h5
+                            )
                         }
                         OutlinedButton(
                             modifier = Modifier.padding(10.dp),
@@ -54,14 +59,14 @@ fun DeleteDialog(
                             border = BorderStroke(width = 1.dp, color = Color.DarkGray),
                             onClick = { onDismiss() })
                         {
-                            Text(text = "WRÓĆ", style = MaterialTheme.typography.h5)
+                            Text(
+                                text = stringResource(id = R.string.hint18),
+                                style = MaterialTheme.typography.h5
+                            )
                         }
-
                     }
                 }
             }
-
         }
-
     }
 }

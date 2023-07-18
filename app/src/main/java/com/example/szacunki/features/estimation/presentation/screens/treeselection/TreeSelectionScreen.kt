@@ -15,14 +15,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.szacunki.core.calculations.color1
-import com.example.szacunki.core.calculations.color2
-import com.example.szacunki.core.calculations.color4
-import com.example.szacunki.core.composablefunctions.GradientBackground
+import com.example.szacunki.core.extensions.getBaseNameList
+import com.example.szacunki.core.extensions.gradientBackground
 import com.example.szacunki.destinations.EstimationScreenDestination
-import com.example.szacunki.features.estimation.presentation.model.baseNameList
+import com.example.szacunki.ui.theme.brushList1
+import com.example.szacunki.ui.theme.color4
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -33,18 +33,17 @@ fun TreeSelectionScreen(
     sectionNumber: String?,
     navigator: DestinationsNavigator
 ) {
+    val context = LocalContext.current
     val treeList = rememberSaveable { mutableStateOf(listOf<String>()) }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(
-                GradientBackground(colorList = listOf(Color.White, color1, color2))
+                brushList1.gradientBackground()
             ),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         Text(
             text = "Wybierz drzewa",
             style = MaterialTheme.typography.h5,
@@ -55,7 +54,7 @@ fun TreeSelectionScreen(
             verticalArrangement = Arrangement.SpaceEvenly,
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            items(baseNameList) { treeName ->
+            items(context.getBaseNameList()) { treeName ->
                 val isChecked = rememberSaveable { mutableStateOf(false) }
 
                 Card(
@@ -63,7 +62,8 @@ fun TreeSelectionScreen(
                     shape = RoundedCornerShape(15.dp),
                     elevation = 5.dp
                 ) {
-                    Box(contentAlignment = Alignment.Center,
+                    Box(
+                        contentAlignment = Alignment.Center,
                         modifier = Modifier
                             .fillMaxSize()
                             .background(color = if (isChecked.value) color4 else Color.White)

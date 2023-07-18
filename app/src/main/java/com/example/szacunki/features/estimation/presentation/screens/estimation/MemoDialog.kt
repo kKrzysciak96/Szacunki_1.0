@@ -6,37 +6,36 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.example.szacunki.core.calculations.color2
-import com.example.szacunki.core.calculations.updateEstimationMemo
+import com.example.szacunki.R
+import com.example.szacunki.core.extensions.createEstimationToUpdateMemo
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
+import com.example.szacunki.ui.theme.color2
 
 @Composable
 fun MemoDialog(
-    estimation: State<EstimationDisplayable>,
-    viewModel: EstimationViewModel,
-    onDismiss: () -> Unit
+    estimation: EstimationDisplayable,
+    updateEstimation: (EstimationDisplayable) -> Unit,
+    onDismissRequest: () -> Unit
 ) {
-
-    Dialog(onDismissRequest = { onDismiss() }) {
-        Card() {
+    Dialog(onDismissRequest = { onDismissRequest() }) {
+        Card {
             Box(contentAlignment = Alignment.Center) {
                 Column(modifier = Modifier.padding(20.dp)) {
                     Text(
-                        text = "Notatka służbowa:",
+                        text = stringResource(id = R.string.hint8),
                         style = MaterialTheme.typography.h5,
                         modifier = Modifier.padding(5.dp)
                     )
                     OutlinedTextField(
-                        value = estimation.value.memo,
+                        value = estimation.memo,
                         onValueChange = {
-                            viewModel.updateEstimationFlow(
-                                updateEstimationMemo(
-                                    estimation = estimation,
+                            updateEstimation(
+                                estimation.createEstimationToUpdateMemo(
                                     memo = it
                                 )
                             )
@@ -50,8 +49,6 @@ fun MemoDialog(
                     )
                 }
             }
-
         }
-
     }
 }

@@ -11,8 +11,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.example.szacunki.core.calculations.color2
-import com.example.szacunki.core.extensions.CustomMarker
+import com.example.szacunki.features.map.presentation.custom.CustomMarker
+import com.example.szacunki.ui.theme.color2
 import org.osmdroid.views.MapView
 import java.util.*
 
@@ -26,7 +26,7 @@ fun MarkerDeleteDialog(
 ) {
 
     Dialog(onDismissRequest = { onDismiss() }) {
-        Card() {
+        Card {
             Box(contentAlignment = Alignment.Center) {
                 Column(
                     modifier = Modifier.fillMaxWidth(),

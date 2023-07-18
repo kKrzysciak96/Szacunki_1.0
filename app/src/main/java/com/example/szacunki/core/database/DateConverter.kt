@@ -11,7 +11,6 @@ class DateConverter {
         fun fromDate(date: Date): Long {
             return date.time
         }
-
         @TypeConverter
         @JvmStatic
         fun toDate(millisSinceEpoch: Long): Date {

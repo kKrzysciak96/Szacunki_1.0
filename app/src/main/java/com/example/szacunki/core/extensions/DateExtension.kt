@@ -16,7 +16,6 @@ fun LocalDateTime.prepareDateToDisplay(): String {
     val day = this.dayOfMonth.toString()
     val hours = this.hour.toString()
     val minutes = this.minute.toString()
-
     return "$year/$month/$day $hours:$minutes"
 }
 
@@ -28,6 +27,5 @@ fun LocalDateTime.prepareDateToSave(): String {
     val minutes = this.minute.toString()
     val floor = "_"
     val colon = ":"
-
     return year + floor + month + floor + day + floor + hours + colon + minutes
 }

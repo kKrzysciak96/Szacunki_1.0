@@ -4,30 +4,23 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.szacunki.features.estimation.domain.EstimationRepository
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.*
 
 class SavedEstimationsViewModel(private val estimationRepository: EstimationRepository) :
     ViewModel() {
 
     var estimations = getAllEstimations()
 
+    private var _estimation = MutableStateFlow<EstimationDisplayable?>(null)
+    val estimation = _estimation.asStateFlow()
+
     private fun getAllEstimations() = estimationRepository.getAllEstimationsFromLocal()
         .map { estimationDomain -> estimationDomain.map { EstimationDisplayable(it) } }
 
-
-    private var _estimationFlow = MutableStateFlow<EstimationDisplayable?>(null)
-    val estimationFlow = _estimationFlow.asStateFlow()
-
-    fun getSingleEstimation(id: UUID) {
-        viewModelScope.launch {
-            val local: EstimationDisplayable =
-                estimationRepository.getSingleEstimationsFromLocal(id).first()
-                    .let { EstimationDisplayable(it) }
-            _estimationFlow.update { local }
-        }
-    }
 
     fun updateEstimation(estimationDisplayable: EstimationDisplayable) {
         viewModelScope.launch { estimationRepository.updateEstimation(estimationDisplayable.toEstimationDomain()) }
@@ -42,8 +35,6 @@ class SavedEstimationsViewModel(private val estimationRepository: EstimationRepo
     }
 
     fun updateEstimationFlow(estimation: EstimationDisplayable) {
-        _estimationFlow.update { estimation }
+        _estimation.update { estimation }
     }
-
-
 }

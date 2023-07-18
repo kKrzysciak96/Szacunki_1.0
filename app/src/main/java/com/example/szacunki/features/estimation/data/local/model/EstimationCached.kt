@@ -89,5 +89,4 @@ data class TreeQualityClassesCached(
         classB = classB,
         classC = classC,
     )
-
 }

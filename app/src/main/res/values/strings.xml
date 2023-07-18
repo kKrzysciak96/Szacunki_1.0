@@ -1,3 +1,28 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pl">
     <string name="app_name">Szacunki</string>
+    <string name="hint1">Wpisz nazwę i dodaj</string>
+    <string name="hint2">Wpisz nazwę drzewa</string>
+    <string name="hint3">Dodaj</string>
+    <string name="hint4">Lub wybierz z poniższych</string>
+    <string name="hint5">Przytrzymaj</string>
+    <string name="hint6">Oddz. nr.: %1$s</string>
+    <string name="hint7">Data:  %1$s</string>
+    <string name="hint8">Notatka służbowa:</string>
+    <string name="hint9">"Wpisz Notatke"</string>
+    <string name="hint10">%1$s m</string>
+    <string name="hint11">Średnica</string>
+    <string name="hint12">Liczba Drzew</string>
+    <string name="hint13">Wysokość</string>
+    <string name="hint14">Usuń</string>
+    <string name="hint15">Przytrzymaj aby dodać</string>
+    <string name="hint16">Czy napewno usunąć dokument?</string>
+    <string name="hint17">USUŃ</string>
+    <string name="hint18">WRÓĆ</string>
+    <string name="hint19">Zapisane Szacunki Brakarskie</string>
+    <string name="hint20">Zwolniono %1$s pamięci</string>
+    <string name="hint21">Usuń stare Pdf-y</string>
+    <string name="hint22">Wpisz numer oddziału</string>
+    <string name="hint23">Potwierdź</string>
+
+
 </resources>

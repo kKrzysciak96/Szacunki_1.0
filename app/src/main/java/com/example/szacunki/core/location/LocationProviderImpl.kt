@@ -17,12 +17,10 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class LocationProviderImpl(
-    private val context: Context, private val client: FusedLocationProviderClient
+    private val context: Context,
+    private val client: FusedLocationProviderClient,
+    private val locationManager: LocationManager
 ) : LocationProvider {
-
-    private val locationManager =
-        context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-
     //zrób oddzielny privider
     fun isGPSEnabled(): Flow<Boolean> {
         return flow {

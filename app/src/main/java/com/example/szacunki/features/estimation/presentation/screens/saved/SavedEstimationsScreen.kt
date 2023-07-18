@@ -1,7 +1,6 @@
 package com.example.szacunki.features.estimation.presentation.screens.saved
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,122 +14,117 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import com.example.szacunki.R
-import com.example.szacunki.core.calculations.color1
-import com.example.szacunki.core.calculations.color2
 import com.example.szacunki.core.extensions.prepareDateToDisplay
 import com.example.szacunki.core.extensions.toLocalDateTime
 import com.example.szacunki.core.extensions.trimToDisplaySectionNumber
 import com.example.szacunki.destinations.EstimationScreenDestination
 import com.example.szacunki.destinations.PdfViewerScreenDestination
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
-import com.example.szacunki.features.pdf.creator.PdfGenerator
 import com.example.szacunki.features.pdf.creator.PdfGenerator.generatePdf
-import com.example.szacunki.features.pdf.viewer.share
+import com.example.szacunki.features.pdf.viewer.shareFile
+import com.example.szacunki.ui.theme.color1
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 import java.io.File
 import java.util.*
 
 @Destination
 @Composable
-fun SavedEstimationsScreen(navigator: DestinationsNavigator) {
-    val viewModel = getViewModel<SavedEstimationsViewModel>()
+fun SavedEstimationsScreen(
+    navigator: DestinationsNavigator, viewModel: SavedEstimationsViewModel = koinViewModel()
+) {
     val estimations = viewModel.estimations.collectAsState(emptyList())
     val deleteDialogVisible = rememberSaveable { mutableStateOf(false) }
-    val estimationToDelete = viewModel.estimationFlow.collectAsState()
+    val estimationToDelete = viewModel.estimation.collectAsState()
 
+    SavedEstimationsScreen(
+        estimations = estimations.value,
+        deleteDialogVisible = deleteDialogVisible,
+        estimationToDelete = estimationToDelete.value,
+        updateEstimation = viewModel::updateEstimation,
+        deleteEstimation = viewModel::deleteEstimation,
+        navigateToEstimationsScreen = navigator::navigateToEstimationsScreen,
+        navigateToPdfViewerScreen = navigator::navigateToPdfViewerScreen
+    )
+}
+
+@Composable
+private fun SavedEstimationsScreen(
+    estimations: List<EstimationDisplayable>,
+    deleteDialogVisible: MutableState<Boolean>,
+    estimationToDelete: EstimationDisplayable?,
+    updateEstimation: (EstimationDisplayable) -> Unit,
+    deleteEstimation: (EstimationDisplayable) -> Unit,
+    navigateToEstimationsScreen: (UUID?) -> Unit,
+    navigateToPdfViewerScreen: (String) -> Unit
+) {
     key(deleteDialogVisible.value) {
         Scaffold(
             topBar = { SavedEstimationsTopBar() },
-            bottomBar = { SavedEstimationsBottomBar(viewModel = viewModel) },
-            content = { padding ->
-                estimationToDelete.value?.let {
+            bottomBar = { SavedEstimationsBottomBar() },
+            content = {
+                estimationToDelete?.let { estimation ->
                     if (deleteDialogVisible.value) {
                         DeleteDialog(
-                            estimation = it,
-                            viewModel = viewModel,
-                            onDismiss = {
-                                deleteDialogVisible.value = false
-
-                            })
+                            estimation = estimation,
+                            deleteEstimation = deleteEstimation,
+                            onDismiss = { deleteDialogVisible.value = false })
                     }
                 }
                 AllSavedEstimationsContent(
                     estimations = estimations,
-                    navigator = navigator,
-                    onSwipeToDismiss = {
-                        viewModel.updateEstimationFlow(it)
+                    navigateToEstimationsScreen = navigateToEstimationsScreen,
+                    navigateToPdfViewerScreen = navigateToPdfViewerScreen,
+                    onSwipeToDismiss = { estimation ->
+                        updateEstimation(estimation)
                         deleteDialogVisible.value = true
                     })
-                padding
+                it
             })
     }
 }
 
 @Composable
-fun SavedEstimationsTopBar() {
-    TopAppBar(modifier = Modifier.fillMaxWidth(), backgroundColor = color2) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(
-                text = "Zapisane Szacunki Brakarskie",
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.h5
-            )
-        }
-
-    }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
 fun AllSavedEstimationsContent(
-    estimations: State<List<EstimationDisplayable>>,
-    navigator: DestinationsNavigator,
+    estimations: List<EstimationDisplayable>,
+    navigateToEstimationsScreen: (UUID?) -> Unit,
+    navigateToPdfViewerScreen: (String) -> Unit,
     onSwipeToDismiss: (EstimationDisplayable) -> Unit,
 ) {
-
     val context = LocalContext.current
-
     LazyColumn(
-        reverseLayout = false,
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 50.dp)
     ) {
-
         items(
-            items = estimations.value.sortedByDescending { it.date.time },
+            items = estimations.sortedByDescending { it.date.time },
             key = { it.id }) { estimation ->
-
             EstimationRow(
                 context = context,
                 estimation = estimation,
-                navigator = navigator,
+                navigateToEstimationsScreen = navigateToEstimationsScreen,
+                navigateToPdfViewerScreen = navigateToPdfViewerScreen,
                 onSwipeToDismiss = onSwipeToDismiss
             )
-
-
         }
     }
 }
-
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun EstimationRow(
     context: Context,
     estimation: EstimationDisplayable,
-    navigator: DestinationsNavigator,
+    navigateToEstimationsScreen: (UUID?) -> Unit,
+    navigateToPdfViewerScreen: (String) -> Unit,
     onSwipeToDismiss: (EstimationDisplayable) -> Unit
 ) {
     val dismissState = rememberDismissState(confirmStateChange = {
@@ -139,7 +133,6 @@ fun EstimationRow(
         }
         true
     })
-
     SwipeToDismiss(
         state = dismissState,
         background = {
@@ -149,23 +142,14 @@ fun EstimationRow(
                     .padding(start = 100.dp, end = 20.dp, top = 20.dp, bottom = 10.dp),
                 contentAlignment = Alignment.CenterEnd
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_delete),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(60.dp)
-                        .padding(end = 10.dp),
-                    tint = Color.Red
-                )
+                BackgroundSwipeToDismissIcon()
             }
         },
         dismissThresholds = { FractionalThreshold(0.75F) },
         directions = setOf(DismissDirection.EndToStart)
     ) {
-
         Card(
-            modifier = Modifier
-                .padding(10.dp),
+            modifier = Modifier.padding(10.dp),
             backgroundColor = color1,
             elevation = 5.dp,
             shape = RoundedCornerShape(10.dp)
@@ -173,26 +157,11 @@ fun EstimationRow(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable {
-                        val id = estimation.id
-                        val navArg = EstimationScreenDestination.NavArgs(
-                            id = id,
-                            sectionNumber = null,
-                            treeNames = null
-                        )
-                        navigator.navigate(EstimationScreenDestination(navArg))
-//                        val navArg = EstimationScreenScrollDestination.NavArgs(
-//                            id = id,
-//                            sectionNumber = null,
-//                            treeNames = null
-//                        )
-//                        navigator.navigate(EstimationScreenScrollDestination(navArg))
-
-                    },
+                    .clickable { navigateToEstimationsScreen(estimation.id) },
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                EstimationView(
+                EstimationDetailsView(
                     name = estimation.sectionNumber.trimToDisplaySectionNumber(),
                     date = estimation.date,
                     modifier = Modifier.weight(0.7F)
@@ -204,41 +173,16 @@ fun EstimationRow(
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_send),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .weight(0.5F)
-                            .size(50.dp)
-                            .padding(end = 10.dp)
-                            .clickable {
-                                val path =
-                                    generatePdf(context = context, estimation = estimation)
-                                val file = File(path)
-                                val uri = FileProvider.getUriForFile(
-                                    context,
-                                    "com.example.szacunki.fileprovider",
-                                    file
-                                )
-                                share(uri, context)
-                            }
+                    SendIcon(
+                        modifier = Modifier.weight(0.5F),
+                        context = context,
+                        estimation = estimation
                     )
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_pdf),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .weight(0.5F)
-                            .size(50.dp)
-                            .padding(end = 10.dp)
-                            .clickable {
-                                val path = PdfGenerator.generatePdf(context, estimation)
-                                val navArg = PdfViewerScreenDestination.NavArgs(path = path)
-                                navigator.navigate(
-                                    com.example.szacunki.destinations.PdfViewerScreenDestination(
-                                        navArg
-                                    )
-                                )
-                            }
+                    ShowPdfIcon(
+                        modifier = Modifier.weight(0.5F),
+                        context = context,
+                        estimation = estimation,
+                        navigateToPdfViewerScreen = navigateToPdfViewerScreen
                     )
                 }
             }
@@ -247,13 +191,60 @@ fun EstimationRow(
 }
 
 @Composable
-fun EstimationView(name: String, date: Date, modifier: Modifier = Modifier) {
+fun BackgroundSwipeToDismissIcon() {
+    Icon(
+        painter = painterResource(id = R.drawable.ic_delete),
+        contentDescription = null,
+        modifier = Modifier
+            .size(60.dp)
+            .padding(end = 10.dp),
+        tint = Color.Red
+    )
+}
+
+@Composable
+fun SendIcon(modifier: Modifier, context: Context, estimation: EstimationDisplayable) {
+    Icon(painter = painterResource(id = R.drawable.ic_send),
+        contentDescription = null,
+        modifier = modifier
+            .size(50.dp)
+            .padding(end = 10.dp)
+            .clickable {
+                val path = generatePdf(context = context, estimation = estimation)
+                val file = File(path)
+                val uri = FileProvider.getUriForFile(
+                    context, "com.example.szacunki.fileprovider", file
+                )
+                shareFile(uri, context)
+            })
+}
+
+@Composable
+fun ShowPdfIcon(
+    modifier: Modifier,
+    context: Context,
+    estimation: EstimationDisplayable,
+    navigateToPdfViewerScreen: (String) -> Unit
+) {
+    Icon(
+        painter = painterResource(id = R.drawable.ic_pdf),
+        contentDescription = null,
+        modifier = modifier
+            .size(50.dp)
+            .padding(end = 10.dp)
+            .clickable {
+                val path = generatePdf(context, estimation)
+                navigateToPdfViewerScreen(path)
+            })
+}
+
+@Composable
+fun EstimationDetailsView(name: String, date: Date, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier, verticalArrangement = Arrangement.Center
     ) {
-        val title = "Oddział nr.: $name"
         Text(
-            text = title,
+            text = stringResource(R.string.hint6, name),
             modifier = Modifier.padding(5.dp),
             textAlign = TextAlign.Start,
             style = MaterialTheme.typography.h5,
@@ -268,54 +259,12 @@ fun EstimationView(name: String, date: Date, modifier: Modifier = Modifier) {
             color = Color.DarkGray
         )
     }
-
 }
 
-@Composable
-fun SavedEstimationsBottomBar(viewModel: SavedEstimationsViewModel) {
-    var folderSize by remember { mutableStateOf("") }
-    val scope = rememberCoroutineScope()
-    val context = LocalContext.current
-    BottomAppBar(
-        modifier = Modifier
-            .fillMaxWidth(), backgroundColor = color2
-    ) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            OutlinedButton(
-                onClick = {
-                    scope.launch {
-                        val folderPath =
-                            context.filesDir.absolutePath + File.separator + "estimationPdf"
-                        val size = withContext(Dispatchers.IO) {
-                            calculateFolderSize(folderPath, context)
-                        }
-                        folderSize = formatSize(size)
-                        withContext(Dispatchers.IO) {
-                            deleteSavedPdfs(File(folderPath))
-                        }
-                        Toast.makeText(
-                            context,
-                            "Zwolniono $folderSize pamięci",
-                            Toast.LENGTH_LONG
-                        )
-                            .show()
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(200.dp)
-                    .padding(top = 10.dp, bottom = 10.dp)
-
-            ) {
-                Text(
-                    text = "Usuń stare Pdf-y",
-                    fontSize = 14.sp,
-                    color = Color.Black
-                )
-            }
-        }
-    }
+private fun DestinationsNavigator.navigateToEstimationsScreen(id: UUID?) {
+    navigate(EstimationScreenDestination(id = id, sectionNumber = null, treeNames = null))
 }
 
-
-
+private fun DestinationsNavigator.navigateToPdfViewerScreen(path: String) {
+    navigate(PdfViewerScreenDestination(path))
+}

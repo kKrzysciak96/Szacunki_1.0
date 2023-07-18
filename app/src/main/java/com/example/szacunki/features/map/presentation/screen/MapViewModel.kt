@@ -4,8 +4,8 @@ import android.location.Location
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.szacunki.core.gps.GpsStateProvider
 import com.example.szacunki.core.location.LocationProvider
-import com.example.szacunki.core.location.LocationProviderImpl
 import com.example.szacunki.features.map.domain.MapRepository
 import com.example.szacunki.features.map.domain.SharedPreferencesRepository
 import com.example.szacunki.features.map.presentation.model.CameraState
@@ -24,7 +24,8 @@ import java.util.*
 class MapViewModel(
     private val mapRepository: MapRepository,
     private val sharedPreferencesRepository: SharedPreferencesRepository,
-    private val locationProvider: LocationProvider
+    private val locationProvider: LocationProvider,
+    private val gpsStateProvider: GpsStateProvider
 ) : ViewModel() {
 
     private val _cameraState = MutableStateFlow<CameraState>(CameraState(0.0, 0.0, 15.0))
@@ -62,7 +63,7 @@ class MapViewModel(
     private fun getCurrentLocation() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                locationProvider.getCurrentLocation(5000).collect() {
+                locationProvider.getCurrentLocation(5000).collect {
                     _currentLocation.value = it
                 }
             }
@@ -72,7 +73,7 @@ class MapViewModel(
     private fun getGpsStatus() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                (locationProvider as LocationProviderImpl).isGPSEnabled().collect() {
+                gpsStateProvider.isGPSEnabled(3000).collect {
                     _isGpsEnabled.value = it
                 }
             }

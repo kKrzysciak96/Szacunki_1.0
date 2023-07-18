@@ -6,40 +6,45 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.szacunki.core.calculations.color1
-import com.example.szacunki.core.calculations.color2
-import com.example.szacunki.core.composablefunctions.GradientBackground
+import com.example.szacunki.R
+import com.example.szacunki.core.extensions.gradientBackground
 import com.example.szacunki.destinations.TreeSelectionScreenDestination
+import com.example.szacunki.ui.theme.brushList1
+import com.example.szacunki.ui.theme.color2
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @Destination(route = "SectionSelectionScreen")
 @Composable
 fun SectionSelectionScreen(navigator: DestinationsNavigator) {
-    val text = remember {
-        mutableStateOf("")
-    }
+    val text = remember { mutableStateOf("") }
+    SectionSelectionScreen(
+        text = text,
+        navigateToTreeSelectionScreen = navigator::navigateToTreeSelectionScreen,
+    )
+}
+
+@Composable
+fun SectionSelectionScreen(
+    text: MutableState<String>,
+    navigateToTreeSelectionScreen: (String) -> Unit,
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                GradientBackground(
-                    colorList = listOf(
-                        Color.White,
-                        color1,
-                        color2
-                    )
-                ) // do pliku Color
-            ), contentAlignment = Alignment.TopCenter
+            .background(brushList1.gradientBackground()),
+        contentAlignment = Alignment.TopCenter
     ) {
         Column(
             verticalArrangement = Arrangement.Center,
@@ -49,7 +54,7 @@ fun SectionSelectionScreen(navigator: DestinationsNavigator) {
             OutlinedTextField(
                 value = text.value,
                 onValueChange = { text.value = it },
-                label = { Text(text = "Wpisz numer oddziału") },
+                label = { Text(text = stringResource(id = R.string.hint22)) },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = color2,
                     focusedLabelColor = color2
@@ -60,15 +65,12 @@ fun SectionSelectionScreen(navigator: DestinationsNavigator) {
                     imeAction = ImeAction.Next
                 ),
                 keyboardActions = KeyboardActions(onNext = {
-                    onConfirmation(
-                        text.value,
-                        navigator
-                    )
+                    navigateToTreeSelectionScreen(text.value)
                 }),
                 modifier = Modifier.padding(bottom = 20.dp)
             )
             OutlinedButton(
-                onClick = { onConfirmation(text.value, navigator) },
+                onClick = { navigateToTreeSelectionScreen(text.value) },
                 enabled = text.value.isNotBlank(),
                 colors = ButtonDefaults.buttonColors(
                     contentColor = Color.Black,
@@ -78,26 +80,15 @@ fun SectionSelectionScreen(navigator: DestinationsNavigator) {
                 )
             ) {
                 Text(
-                    text = "Potwierdź", textAlign = TextAlign.Center,
+                    text = stringResource(id = R.string.hint23), textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.h5,
                 )
             }
         }
-
     }
 }
 
-/**
- * TODO
- * Nie potrzebujesz dodawać NavArgs automatycznie ci to doda przeciążona funkcja invoke
- * @see TreeSelectionScreenDestination
- * private fun DestinationsNavigator.onConfirmation(text: String) = popBackStack().also { navigate(TreeSelectionScreenDestination(text)) }
- */
-
-fun onConfirmation(text: String, navigator: DestinationsNavigator) {
-    val navArg =
-        TreeSelectionScreenDestination.NavArgs(text)
-    navigator.popBackStack()
-    navigator.navigate(TreeSelectionScreenDestination(navArg))
+private fun DestinationsNavigator.navigateToTreeSelectionScreen(text: String) {
+    popBackStack().also { navigate(TreeSelectionScreenDestination(text)) }
 }
 

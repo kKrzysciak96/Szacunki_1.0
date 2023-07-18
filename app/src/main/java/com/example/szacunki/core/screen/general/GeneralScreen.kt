@@ -1,6 +1,7 @@
 package com.example.szacunki.core.screen.general
 
 import android.Manifest
+import android.content.Context
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -14,14 +15,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.example.szacunki.core.calculations.color1
-import com.example.szacunki.core.calculations.color2
-import com.example.szacunki.core.composablefunctions.GradientBackground
-import com.example.szacunki.destinations.FolderSizeCalculatorScreenDestination
+import androidx.compose.ui.platform.LocalContext
+import com.example.szacunki.core.extensions.gradientBackground
 import com.example.szacunki.destinations.MapScreenDestination
 import com.example.szacunki.destinations.SavedEstimationsScreenDestination
 import com.example.szacunki.destinations.SectionSelectionScreenDestination
 import com.example.szacunki.features.map.presentation.screen.MapViewModel
+import com.example.szacunki.ui.theme.brushList1
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -31,29 +31,35 @@ import org.koin.androidx.compose.koinViewModel
 @Destination(route = "GeneralScreen")
 @Composable
 fun GeneralScreen(navigator: DestinationsNavigator, viewModel: MapViewModel = koinViewModel()) {
-
-//    GeneralScreen(navigateToMapScreen =  navigator::navigateToMapScreen )
-    GeneralScreen(navigator = navigator)
+    val context = LocalContext.current
+    GeneralScreen(
+        context = context,
+        navigateToMapScreen = navigator::navigateToMapScreen,
+        navigateToSectionSelectionScreen = navigator::navigateToSectionSelectionScreen,
+        navigateToSavedEstimationsScreen = navigator::navigateToSavedEstimationsScreen
+    )
 }
 
 // wstrzyknij do konstruktora viewModel
 @Composable
-private fun GeneralScreen(navigator: DestinationsNavigator) {
-
-    val locationPermissionResultLauncher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestMultiplePermissions(),
-            onResult = { isGranted ->
-                if (isGranted[Manifest.permission.ACCESS_COARSE_LOCATION] == true && isGranted[Manifest.permission.ACCESS_FINE_LOCATION] == true) {
-//                    navigateToMapScreen()
-                    navigator.navigateToMapScreen()
-                    //TODO
-                }
-            })
+private fun GeneralScreen(
+    context: Context,
+    navigateToMapScreen: () -> Unit,
+    navigateToSectionSelectionScreen: () -> Unit,
+    navigateToSavedEstimationsScreen: () -> Unit
+) {
+    val locationPermissionResultLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions(),
+        onResult = { isGranted ->
+            if (isGranted[Manifest.permission.ACCESS_COARSE_LOCATION] == true && isGranted[Manifest.permission.ACCESS_FINE_LOCATION] == true) {
+                navigateToMapScreen()
+            }
+        })
     Box(
         contentAlignment = Alignment.Center, modifier = Modifier
             .fillMaxSize()
             .background(
-                GradientBackground(colorList = listOf(Color.White, color1, color2))
+                brushList1.gradientBackground()
             )
     ) {
         Column(
@@ -61,32 +67,57 @@ private fun GeneralScreen(navigator: DestinationsNavigator) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            OutlinedButton(onClick = { navigator.navigate(SectionSelectionScreenDestination) }) {
-                Text(text = "Utwórz nowy dokument", color = Color.Black)
-            }
-            OutlinedButton(onClick = { navigator.navigate(SavedEstimationsScreenDestination) }) {
-                Text(text = "Zobacz Zapisane", color = Color.Black)
-            }
-            OutlinedButton(onClick = {
-                locationPermissionResultLauncher.launch(
-                    arrayOf(
-                        Manifest.permission.ACCESS_COARSE_LOCATION,
-                        Manifest.permission.ACCESS_FINE_LOCATION
+            CreateNewDocumentButton(
+                context = context,
+                onClick = { navigateToSectionSelectionScreen() })
+            ShowSavedDocumentsButton(
+                context = context,
+                onClick = { navigateToSavedEstimationsScreen() })
+            ShowMapButton(
+                context = context,
+                onClick = {
+                    locationPermissionResultLauncher.launch(
+                        arrayOf(
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                        )
                     )
-                )
-            }) {
-                Text(text = "Pokaż mapę", color = Color.Black)
-            }
-            OutlinedButton(onClick = {
-                navigator.navigate(FolderSizeCalculatorScreenDestination)
-            }) {
-                Text(text = "USTAWIENIA", color = Color.Black)
-            }
+                }
+            )
         }
     }
 }
 
-// zrób private
-fun DestinationsNavigator.navigateToMapScreen() {
-    this.navigate(MapScreenDestination)
+@Composable
+private fun CreateNewDocumentButton(context: Context, onClick: () -> Unit) {
+    OutlinedButton(onClick = onClick) {
+        Text(text = "Utwórz nowy dokument", color = Color.Black)
+    }
+}
+
+@Composable
+private fun ShowSavedDocumentsButton(context: Context, onClick: () -> Unit) {
+    OutlinedButton(onClick = onClick) {
+        Text(text = "Zobacz Zapisane", color = Color.Black)
+    }
+}
+
+@Composable
+private fun ShowMapButton(context: Context, onClick: () -> Unit) {
+    OutlinedButton(onClick = onClick) {
+        Text(text = "Pokaż mapę", color = Color.Black)
+    }
+}
+
+private fun DestinationsNavigator.navigateToMapScreen() {
+    navigate(MapScreenDestination)
+}
+
+private fun DestinationsNavigator.navigateToSectionSelectionScreen() {
+    navigate(SectionSelectionScreenDestination)
+
+}
+
+private fun DestinationsNavigator.navigateToSavedEstimationsScreen() {
+    navigate(SavedEstimationsScreenDestination)
 }

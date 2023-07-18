@@ -12,5 +12,5 @@ import org.koin.dsl.module
 val mapModule = module {
     factory<MapRepository> { MapRepositoryImpl(get()) }
     factory<SharedPreferencesRepository> { SharedPreferencesRepositoryImpl(androidContext()) }
-    viewModel { MapViewModel(get(), get(), get()) }
+    viewModel { MapViewModel(get(), get(), get(), get()) }
 }

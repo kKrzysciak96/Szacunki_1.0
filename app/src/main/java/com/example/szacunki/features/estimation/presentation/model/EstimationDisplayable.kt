@@ -7,7 +7,7 @@ import com.example.szacunki.features.estimation.domain.model.TreeRowDomain
 import java.util.*
 
 data class EstimationDisplayable(
-    val trees: List<TreeDisplayable> = baseNameList.map { TreeDisplayable(name = it) },
+    val trees: List<TreeDisplayable>,
     val sectionNumber: String,
     val memo: String = "",
     val date: Date = Date(),
@@ -32,7 +32,7 @@ data class EstimationDisplayable(
 
 data class TreeDisplayable(
     val name: String,
-    val treeRows: List<TreeRowDisplayable> = baseDiameterList.map { TreeRowDisplayable(diameter = it) }
+    val treeRows: List<TreeRowDisplayable>
 ) {
     constructor(treDomain: TreeDomain) : this(
         name = treDomain.name,
@@ -85,53 +85,7 @@ data class TreeQualityClassesDisplayable(
         classB = classB,
         classC = classC
     )
-
 }
 
-val baseNameList = listOf(
-    "Dąb Szypułkowy",
-    "Dąb Czerwony",
-    "Topola Biała",
-    "Topola Osika",
-    "Buk",
-    "Lipa",
-    "Brzoza",
-    "Czeremcha",
-    "Grab",
-    "Olszyna",
-    "Sosna Zwyczajna",
-    "Jodła",
-    "Świerk",
-    "Modrzew",
-    "Cis"
-)
-val baseDiameterList = listOf(
-    "7-8.9",
-    "9-10.9",
-    "11-12.9",
-    "13-14.5",
-    "15-16.9",
-    "17-18.9",
-    "19-20.9",
-    "21-22.9",
-    "23-24.9",
-    "25-26.9",
-    "27-30.9",
-    "31-34.9",
-    "35-38.9",
-    "39-42.9",
-    "43-46.9",
-    "47-50.9",
-    "51-54.9",
-    "55-58.9",
-    "59-62.9",
-    "63-66.9",
-    "67-70.9",
-    "71-74.9",
-    "75-78.9",
-    "79-82.9",
-    "83-86.9",
-    "87-90.9"
-)
 
 

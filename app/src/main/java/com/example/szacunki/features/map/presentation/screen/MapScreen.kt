@@ -25,6 +25,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.example.szacunki.R
 import com.example.szacunki.core.extensions.*
+import com.example.szacunki.features.map.presentation.custom.CustomMapListener
 import com.example.szacunki.features.map.presentation.model.GeoNoteDisplayable
 import com.ramcosta.composedestinations.annotation.Destination
 import org.koin.androidx.compose.getViewModel

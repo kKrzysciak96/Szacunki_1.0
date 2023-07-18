@@ -1,6 +1,5 @@
 package com.example.szacunki.features.estimation.presentation.screens.estimation
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -14,37 +13,21 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.szacunki.R
-import com.example.szacunki.core.calculations.color2
-import com.example.szacunki.core.calculations.createEstimationToUpdateTreeHeight
+import com.example.szacunki.core.extensions.createEstimationToUpdateTreeHeight
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
-
-
-@Composable
-fun TitleParametersRow(index: Int = 0) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(color2),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(text = "Średnica")
-        Text(text = "Liczba Drzew")
-        Text(text = "Wysokość")
-    }
-}
 
 @Composable
 fun ScrollableColumnTreeParametersRow(
-    estimation: State<EstimationDisplayable>,
-    viewModel: EstimationViewModel,
+    estimation: EstimationDisplayable,
     treeIndex: MutableState<Int>,
     diameterIndexState: MutableState<Int>,
-    classesDialogState: MutableState<Boolean>
+    classesDialogState: MutableState<Boolean>,
+    updateEstimation: (EstimationDisplayable) -> Unit,
 ) {
     val verticalScrollState = rememberScrollState()
     Column(
@@ -53,14 +36,14 @@ fun ScrollableColumnTreeParametersRow(
             .padding(bottom = 70.dp)
             .verticalScroll(state = verticalScrollState)
     ) {
-        estimation.value.trees[treeIndex.value].treeRows.forEachIndexed { itemIndex, item ->
+        estimation.trees[treeIndex.value].treeRows.forEachIndexed { itemIndex, item ->
             TreeParametersRow(
                 diameter = item.diameter,
                 treeIndex = treeIndex.value,
                 diameterIndex = itemIndex,
                 diameterIndexState = diameterIndexState,
                 estimation = estimation,
-                viewModel = viewModel,
+                updateEstimation = updateEstimation,
                 classesDialogState = classesDialogState
             )
         }
@@ -68,13 +51,13 @@ fun ScrollableColumnTreeParametersRow(
 }
 
 @Composable
-fun TreeParametersRow(
+private fun TreeParametersRow(
     diameter: String,
     treeIndex: Int,
     diameterIndex: Int,
     diameterIndexState: MutableState<Int>,
-    estimation: State<EstimationDisplayable>,
-    viewModel: EstimationViewModel,
+    estimation: EstimationDisplayable,
+    updateEstimation: (EstimationDisplayable) -> Unit,
     classesDialogState: MutableState<Boolean>
 ) {
     val isHeightDropdownMenuVisible = rememberSaveable { mutableStateOf(false) }
@@ -84,96 +67,174 @@ fun TreeParametersRow(
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = diameter,
-            modifier = Modifier
-                .width(70.dp)
-                .padding(4.dp),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.body1
+        SingleRowDiameterText(
+            diameter = diameter
         )
-        CustomIdButton(
+        SingleRowSubtractionButton(
             treeIndex = treeIndex,
             diameterIndex = diameterIndex,
             estimation = estimation,
-            viewModel = viewModel,
+            updateEstimation = updateEstimation,
             buttonId = ButtonId.CLASS3,
-            addMode = false
         )
-        Box(contentAlignment = Alignment.Center, modifier = Modifier
-            .size(50.dp)
-            .clickable {
-                diameterIndexState.value = diameterIndex
-                classesDialogState.value = true
-            }) {
-            Text(
-                text = estimation.value.trees[treeIndex].treeRows[diameterIndex].treeQualityClasses.class3.toString(),
-                textAlign = TextAlign.Center
-            )
-        }
-        CustomIdButton(
+        SingleRowQuantityText(
+            classesDialogState = classesDialogState,
+            treeIndex = treeIndex,
+            diameterIndex = diameterIndex,
+            diameterIndexState = diameterIndexState,
+            estimation = estimation
+        )
+        SingleRowAddButton(
             treeIndex = treeIndex,
             diameterIndex = diameterIndex,
             estimation = estimation,
-            viewModel = viewModel,
+            updateEstimation = updateEstimation,
             buttonId = ButtonId.CLASS3,
-            addMode = true,
             modifier = Modifier.padding(end = 20.dp)
         )
-        // Wyrzuc to do opisanej funkcji
-        Box(contentAlignment = Alignment.Center, modifier = Modifier
-            .size(50.dp)
-            .clickable {
-                isHeightDropdownMenuVisible.value = true
-            }) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End,
-            ) {
-                Text(
-                    text = estimation.value.trees[treeIndex].treeRows[diameterIndex].height.toString()
-                )
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_dropdown_arrow),
-                    contentDescription = null
-                )
-                HeightDropdownMenu(
-                    isHeightDropdownMenuVisible = isHeightDropdownMenuVisible,
-                    estimation = estimation,
-                    viewModel = viewModel,
-                    diameterIndex = diameterIndex,
-                    treeIndex = treeIndex,
-                    onDismiss = {
-                        isHeightDropdownMenuVisible.value = false
-                    })
-            }
+        SingleRowHeightText(
+            treeIndex = treeIndex,
+            diameterIndex = diameterIndex,
+            estimation = estimation,
+            isHeightDropdownMenuVisible = isHeightDropdownMenuVisible,
+            updateEstimation = updateEstimation
+        )
+    }
+}
+
+@Composable
+private fun SingleRowDiameterText(diameter: String) {
+    Text(
+        text = diameter,
+        modifier = Modifier
+            .width(70.dp)
+            .padding(4.dp),
+        textAlign = TextAlign.Center,
+        style = MaterialTheme.typography.body1
+    )
+}
+
+@Composable
+fun SingleRowQuantityText(
+    treeIndex: Int,
+    diameterIndex: Int,
+    diameterIndexState: MutableState<Int>,
+    estimation: EstimationDisplayable,
+    classesDialogState: MutableState<Boolean>
+) {
+    Box(contentAlignment = Alignment.Center, modifier = Modifier
+        .size(50.dp)
+        .clickable {
+            diameterIndexState.value = diameterIndex
+            classesDialogState.value = true
+        }) {
+        Text(
+            text = estimation.trees[treeIndex].treeRows[diameterIndex].treeQualityClasses.class3.toString(),
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+fun SingleRowSubtractionButton(
+    treeIndex: Int,
+    diameterIndex: Int,
+    estimation: EstimationDisplayable,
+    buttonId: ButtonId,
+    updateEstimation: (EstimationDisplayable) -> Unit
+) {
+    CustomIdButton(
+        treeIndex = treeIndex,
+        diameterIndex = diameterIndex,
+        estimation = estimation,
+        updateEstimation = updateEstimation,
+        buttonId = buttonId,
+        addMode = false
+    )
+}
+
+@Composable
+fun SingleRowAddButton(
+    treeIndex: Int,
+    diameterIndex: Int,
+    estimation: EstimationDisplayable,
+    buttonId: ButtonId,
+    updateEstimation: (EstimationDisplayable) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    CustomIdButton(
+        treeIndex = treeIndex,
+        diameterIndex = diameterIndex,
+        estimation = estimation,
+        updateEstimation = updateEstimation,
+        buttonId = buttonId,
+        addMode = true,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun SingleRowHeightText(
+    treeIndex: Int,
+    diameterIndex: Int,
+    estimation: EstimationDisplayable,
+    isHeightDropdownMenuVisible: MutableState<Boolean>,
+    updateEstimation: (EstimationDisplayable) -> Unit
+
+) {
+    Box(contentAlignment = Alignment.Center, modifier = Modifier
+        .size(50.dp)
+        .clickable {
+            isHeightDropdownMenuVisible.value = true
+        }) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End,
+        ) {
+            Text(
+                text = estimation.trees[treeIndex].treeRows[diameterIndex].height.toString()
+            )
+            Icon(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_dropdown_arrow),
+                contentDescription = null
+            )
+            HeightDropdownMenu(isHeightDropdownMenuVisible = isHeightDropdownMenuVisible,
+                estimation = estimation,
+                updateEstimation = updateEstimation,
+                diameterIndex = diameterIndex,
+                treeIndex = treeIndex,
+                onDismissRequest = {
+                    isHeightDropdownMenuVisible.value = false
+                })
         }
     }
 }
 
-// Rob private jezeli nie potrzebujesz tego gdzi indziej
 @Composable
-fun HeightDropdownMenu(
+private fun HeightDropdownMenu(
     isHeightDropdownMenuVisible: State<Boolean>,
-    estimation: State<EstimationDisplayable>,
-    viewModel: EstimationViewModel,
+    estimation: EstimationDisplayable,
     diameterIndex: Int,
     treeIndex: Int,
-    onDismiss: () -> Unit,
+    updateEstimation: (EstimationDisplayable) -> Unit,
+    onDismissRequest: () -> Unit,
 ) {
-    DropdownMenu(expanded = isHeightDropdownMenuVisible.value, onDismissRequest = { onDismiss() }) {
+    DropdownMenu(
+        expanded = isHeightDropdownMenuVisible.value,
+        onDismissRequest = { onDismissRequest() }) {
         (0..35).forEach { height ->
-            DropdownMenuItem(onClick = {
-                val newEstimation = createEstimationToUpdateTreeHeight(
-                    estimation = estimation,
-                    height = height,
-                    diameterIndex = diameterIndex,
-                    treeIndex = treeIndex
-                )
-                viewModel.updateEstimationFlow(newEstimation)
-                onDismiss()
-            }) {
-                Text(text = "$height m")
+            DropdownMenuItem(
+                onClick = {
+                    val newEstimation = estimation
+                        .createEstimationToUpdateTreeHeight(
+                            height = height,
+                            diameterIndex = diameterIndex,
+                            treeIndex = treeIndex
+                        )
+                    updateEstimation(newEstimation)
+                    onDismissRequest()
+                }) {
+                Text(text = stringResource(id = R.string.hint10, height.toString()))
             }
         }
     }

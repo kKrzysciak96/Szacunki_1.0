@@ -7,13 +7,8 @@ import java.util.*
 
 @Dao
 interface GeoNoteDao {
-
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveGeoNoteToLocal(geoNote: GeoNoteCached)
-
-//    @Delete
-//    suspend fun deleteGeoNote(geoNote: GeoNoteCached)
 
     @Query("SELECT * FROM GeoNoteCached")
     fun getAllGeoNotesFromLocal(): Flow<List<GeoNoteCached>>

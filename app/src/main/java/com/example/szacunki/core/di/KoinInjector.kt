@@ -1,8 +1,6 @@
 package com.example.szacunki.core.di
 
-import org.koin.core.module.Module
-
-val koinInjector = listOf<Module>(
+val koinInjector = listOf(
     appModule,
     dataBaseModule,
     estimationModule,

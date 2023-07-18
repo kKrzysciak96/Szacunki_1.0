@@ -4,43 +4,53 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import com.example.szacunki.R
-import com.example.szacunki.core.calculations.color1
-import com.example.szacunki.core.calculations.createEstimationToUpdateQuantities
-import com.example.szacunki.core.calculations.performAddition
-import com.example.szacunki.core.calculations.performSubtraction
+import com.example.szacunki.core.extensions.createEstimationToUpdateQuantities
+import com.example.szacunki.core.extensions.performAddition
+import com.example.szacunki.core.extensions.performSubtraction
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
+import com.example.szacunki.ui.theme.color1
 
 @Composable
 fun CustomIdButton(
     treeIndex: Int,
     diameterIndex: Int,
-    estimation: State<EstimationDisplayable>,
-    viewModel: EstimationViewModel,
+    estimation: EstimationDisplayable,
     buttonId: ButtonId,
     addMode: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    updateEstimation: (EstimationDisplayable) -> Unit,
 ) {
-    Button(onClick = {
-        val newQuantity = if (addMode) {
-            performAddition(estimation, treeIndex, diameterIndex, buttonId)
-        } else {
-            performSubtraction(estimation, treeIndex, diameterIndex, buttonId)
-        }
-        val newEstimation =
-            createEstimationToUpdateQuantities(
-                newQuantity,
-                estimation,
-                treeIndex,
-                diameterIndex,
-                buttonId
-            )
-        viewModel.updateEstimationFlow(newEstimation)
-    }, colors = ButtonDefaults.buttonColors(backgroundColor = color1), modifier = modifier) {
+    Button(
+        onClick = {
+            val newQuantity = if (addMode) {
+                estimation.performAddition(
+                    treeIndex = treeIndex,
+                    diameterIndex = diameterIndex,
+                    buttonId = buttonId
+                )
+            } else {
+                estimation.performSubtraction(
+                    treeIndex = treeIndex,
+                    diameterIndex = diameterIndex,
+                    buttonId = buttonId
+                )
+            }
+            val newEstimation =
+                estimation.createEstimationToUpdateQuantities(
+                    newQuantity = newQuantity,
+                    treeIndex = treeIndex,
+                    diameterIndex = diameterIndex,
+                    buttonId = buttonId
+                )
+            updateEstimation(newEstimation)
+        },
+        colors = ButtonDefaults.buttonColors(backgroundColor = color1),
+        modifier = modifier
+    ) {
         Icon(
             imageVector = ImageVector.vectorResource(
                 id = if (addMode) {

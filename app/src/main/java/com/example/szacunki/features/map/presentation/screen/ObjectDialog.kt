@@ -11,8 +11,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.example.szacunki.core.calculations.color2
 import com.example.szacunki.features.map.presentation.model.GeoNoteDisplayable
+import com.example.szacunki.ui.theme.color2
 import org.osmdroid.util.GeoPoint
 import java.util.*
 
@@ -171,7 +171,7 @@ fun DialogToSaveObject(
     onDismiss: (Double, Double) -> Unit
 ) {
     Dialog(onDismissRequest = { onDismiss(latitude, longitude) }) {
-        Card() {
+        Card {
             Box(contentAlignment = Alignment.Center) {
                 Column(
                     modifier = Modifier.padding(20.dp),

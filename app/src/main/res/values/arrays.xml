@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pl">
+    <string-array name="baseNameList">
+        <item> Dąb Szypułkowy</item>
+        <item> Dąb Czerwony</item>
+        <item> Topola Biała</item>
+        <item> Topola Osika</item>
+        <item> Buk</item>
+        <item> Lipa</item>
+        <item> Brzoza</item>
+        <item> Czeremcha</item>
+        <item> Grab</item>
+        <item> Olszyna</item>
+        <item> Sosna Zwyczajna</item>
+        <item> Jodła</item>
+        <item> Świerk</item>
+        <item> Modrzew</item>
+        <item> Cis</item>
+    </string-array>
+    <string-array name="baseDiameterList">
+        <item>7–8.9</item>
+        <item>9–10.9</item>
+        <item>11–12.9</item>
+        <item>13–14.5</item>
+        <item>15–16.9</item>
+        <item>17–18.9</item>
+        <item>19–20.9</item>
+        <item>21–22.9</item>
+        <item>23–24.9</item>
+        <item>25–26.9</item>
+        <item>27–30.9</item>
+        <item>31–34.9</item>
+        <item>35–38.9</item>
+        <item>39–42.9</item>
+        <item>43–46.9</item>
+        <item>47–50.9</item>
+        <item>51–54.9</item>
+        <item>55–58.9</item>
+        <item>59–62.9</item>
+        <item>63–66.9</item>
+        <item>67–70.9</item>
+        <item>71–74.9</item>
+        <item>75–78.9</item>
+        <item>79–82.9</item>
+        <item>83–86.9</item>
+        <item>87–90.9</item>
+    </string-array>
+</resources>

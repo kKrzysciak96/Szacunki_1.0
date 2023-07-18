@@ -10,5 +10,4 @@ data class GeoNoteDomain(
     val date: Date,
     val latitude: Double,
     val longitude: Double,
-
     )

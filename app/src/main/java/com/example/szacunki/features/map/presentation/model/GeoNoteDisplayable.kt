@@ -11,8 +11,6 @@ data class GeoNoteDisplayable(
     val date: Date,
     val latitude: Double,
     val longitude: Double
-
-
 ) {
     constructor(geoNoteDomain: GeoNoteDomain) : this(
         id = geoNoteDomain.id,

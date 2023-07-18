@@ -5,7 +5,6 @@ import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -15,38 +14,38 @@ import com.example.szacunki.features.estimation.presentation.model.EstimationDis
 
 @Composable
 fun AllTreeClassesDialog(
-    estimation: State<EstimationDisplayable>,
+    estimation: EstimationDisplayable,
     treeIndex: Int,
     diameterIndex: Int,
-    viewModel: EstimationViewModel,
+    updateEstimation: (EstimationDisplayable) -> Unit,
     onDismissRequest: () -> Unit
 ) {
     Dialog(onDismissRequest = { onDismissRequest() }) {
         Box(
             contentAlignment = Alignment.Center
         ) {
-            Card() {
+            Card {
                 Column(
                     modifier = Modifier.padding(10.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    val title = "${estimation.value.trees[treeIndex].name}: " +
-                            estimation.value.trees[treeIndex].treeRows[diameterIndex].diameter
+                    val title = "${estimation.trees[treeIndex].name}: " +
+                            estimation.trees[treeIndex].treeRows[diameterIndex].diameter
                     Text(
                         text = title,
                         style = MaterialTheme.typography.h6,
                         textAlign = TextAlign.Center
                     )
                     TitleParametersRow()
-                    estimation.value.trees[treeIndex].treeRows[diameterIndex].treeQualityClasses.run {
+                    estimation.trees[treeIndex].treeRows[diameterIndex].treeQualityClasses.run {
                         ClassParametersRow(
                             treeQualityClassQuantity = class1,
                             name = ButtonId.CLASS1.description,
                             treeIndex = treeIndex,
                             diameterIndex = diameterIndex,
                             estimation = estimation,
-                            viewModel = viewModel,
+                            updateEstimation = updateEstimation,
                             buttonId = ButtonId.CLASS1
                         )
                         ClassParametersRow(
@@ -55,7 +54,7 @@ fun AllTreeClassesDialog(
                             treeIndex = treeIndex,
                             diameterIndex = diameterIndex,
                             estimation = estimation,
-                            viewModel = viewModel,
+                            updateEstimation = updateEstimation,
                             buttonId = ButtonId.CLASS2
                         )
                         ClassParametersRow(
@@ -64,7 +63,7 @@ fun AllTreeClassesDialog(
                             treeIndex = treeIndex,
                             diameterIndex = diameterIndex,
                             estimation = estimation,
-                            viewModel = viewModel,
+                            updateEstimation = updateEstimation,
                             buttonId = ButtonId.CLASS3
                         )
                         ClassParametersRow(
@@ -73,7 +72,7 @@ fun AllTreeClassesDialog(
                             treeIndex = treeIndex,
                             diameterIndex = diameterIndex,
                             estimation = estimation,
-                            viewModel = viewModel,
+                            updateEstimation = updateEstimation,
                             buttonId = ButtonId.CLASSA
                         )
                         ClassParametersRow(
@@ -82,7 +81,7 @@ fun AllTreeClassesDialog(
                             treeIndex = treeIndex,
                             diameterIndex = diameterIndex,
                             estimation = estimation,
-                            viewModel = viewModel,
+                            updateEstimation = updateEstimation,
                             buttonId = ButtonId.CLASSB
                         )
                         ClassParametersRow(
@@ -91,7 +90,7 @@ fun AllTreeClassesDialog(
                             treeIndex = treeIndex,
                             diameterIndex = diameterIndex,
                             estimation = estimation,
-                            viewModel = viewModel,
+                            updateEstimation = updateEstimation,
                             buttonId = ButtonId.CLASSC
                         )
                     }
@@ -103,18 +102,18 @@ fun AllTreeClassesDialog(
 }
 
 @Composable
-fun ClassParametersRow(
+private fun ClassParametersRow(
     treeQualityClassQuantity: Int,
     name: String,
     treeIndex: Int,
     diameterIndex: Int,
-    estimation: State<EstimationDisplayable>,
-    viewModel: EstimationViewModel,
-    buttonId: ButtonId
-
+    estimation: EstimationDisplayable,
+    buttonId: ButtonId,
+    updateEstimation: (EstimationDisplayable) -> Unit,
 ) {
     Row(
-        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
     ) {
         Text(
             text = name, modifier = Modifier
@@ -125,12 +124,13 @@ fun ClassParametersRow(
             treeIndex = treeIndex,
             diameterIndex = diameterIndex,
             estimation = estimation,
-            viewModel = viewModel,
+            updateEstimation = updateEstimation,
             buttonId = buttonId,
             addMode = false
         )
         Text(
-            text = treeQualityClassQuantity.toString(), modifier = Modifier
+            text = treeQualityClassQuantity.toString(),
+            modifier = Modifier
                 .width(50.dp)
                 .padding(5.dp), textAlign = TextAlign.Center
         )
@@ -138,21 +138,18 @@ fun ClassParametersRow(
             treeIndex = treeIndex,
             diameterIndex = diameterIndex,
             estimation = estimation,
-            viewModel = viewModel,
+            updateEstimation = updateEstimation,
             buttonId = buttonId,
             addMode = true
         )
         Text(
-            text = estimation.value.trees[treeIndex].treeRows[diameterIndex].height.toString(),
+            text = estimation.trees[treeIndex].treeRows[diameterIndex].height.toString(),
             modifier = Modifier
                 .width(25.dp)
                 .padding(5.dp),
             textAlign = TextAlign.End
-
         )
-
     }
-
 }
 
 
