@@ -21,13 +21,13 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import com.example.szacunki.R
 import com.example.szacunki.core.extensions.prepareDateToDisplay
+import com.example.szacunki.core.extensions.shareFile
 import com.example.szacunki.core.extensions.toLocalDateTime
 import com.example.szacunki.core.extensions.trimToDisplaySectionNumber
 import com.example.szacunki.destinations.EstimationScreenDestination
 import com.example.szacunki.destinations.PdfViewerScreenDestination
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
 import com.example.szacunki.features.pdf.creator.PdfGenerator.generatePdf
-import com.example.szacunki.features.pdf.viewer.shareFile
 import com.example.szacunki.ui.theme.color1
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -42,7 +42,7 @@ fun SavedEstimationsScreen(
 ) {
     val estimations = viewModel.estimations.collectAsState(emptyList())
     val deleteDialogVisible = rememberSaveable { mutableStateOf(false) }
-    val estimationToDelete = viewModel.estimation.collectAsState()
+    val estimationToDelete = viewModel.estimationToDelete.collectAsState()
 
     SavedEstimationsScreen(
         estimations = estimations.value,
@@ -215,7 +215,7 @@ fun SendIcon(modifier: Modifier, context: Context, estimation: EstimationDisplay
                 val uri = FileProvider.getUriForFile(
                     context, "com.example.szacunki.fileprovider", file
                 )
-                shareFile(uri, context)
+                context.shareFile(uri)
             })
 }
 

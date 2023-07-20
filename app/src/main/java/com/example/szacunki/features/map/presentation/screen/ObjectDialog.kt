@@ -9,8 +9,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.example.szacunki.R
 import com.example.szacunki.features.map.presentation.model.GeoNoteDisplayable
 import com.example.szacunki.ui.theme.color2
 import org.osmdroid.util.GeoPoint
@@ -21,15 +23,15 @@ fun ObjectDialog(
     geoNoteToUpdate: GeoNoteDisplayable? = null,
     latitude: Double,
     longitude: Double,
-    viewModel: MapViewModel,
+    updateGeoNote: (GeoNoteDisplayable) -> Unit,
+    saveGeoNoteToLocal: (GeoNoteDisplayable) -> Unit,
+    updateLocationToZoom: (GeoPoint?) -> Unit,
     onDismiss: (Double, Double) -> Unit
 ) {
     val title = rememberSaveable { mutableStateOf("") }
     val description = rememberSaveable { mutableStateOf("") }
     val section = rememberSaveable { mutableStateOf("") }
-
     if (geoNoteToUpdate != null) {
-
         LaunchedEffect(key1 = Unit, block = {
             title.value = title.value.ifBlank {
                 geoNoteToUpdate.title
@@ -39,38 +41,37 @@ fun ObjectDialog(
         })
         DialogToUpdateObject(
             geoNoteToUpdate = geoNoteToUpdate,
-            viewModel = viewModel,
             title = title,
             description = description,
             section = section,
-            promptTitle = "Wpisz Tytuł",
-            promptDescription = "Wpisz Notatkę",
-            promptSection = "Wpisz Oddział",
-            buttonText = "Aktualizuj Obiekt",
+            promptTitle = stringResource(id = R.string.hint28),
+            promptDescription = stringResource(id = R.string.hint9),
+            promptSection = stringResource(id = R.string.hint29),
+            buttonText = stringResource(id = R.string.hint30),
+            updateGeoNote = updateGeoNote,
             onDismiss = onDismiss
         )
     } else {
         DialogToSaveObject(
             latitude = latitude,
             longitude = longitude,
-            viewModel = viewModel,
             title = title,
             description = description,
             section = section,
-            promptTitle = "Wpisz Tytuł",
-            promptDescription = "Wpisz Notatkę",
-            promptSection = "Wpisz Oddział",
-            buttonText = "Dodaj Obiekt",
+            promptTitle = stringResource(id = R.string.hint28),
+            promptDescription = stringResource(id = R.string.hint9),
+            promptSection = stringResource(id = R.string.hint29),
+            buttonText = stringResource(id = R.string.hint31),
+            saveGeoNoteToLocal = saveGeoNoteToLocal,
+            updateLocationToZoom = updateLocationToZoom,
             onDismiss = onDismiss
         )
     }
-
 }
 
 @Composable
 fun DialogToUpdateObject(
     geoNoteToUpdate: GeoNoteDisplayable,
-    viewModel: MapViewModel,
     title: MutableState<String>,
     description: MutableState<String>,
     section: MutableState<String>,
@@ -78,9 +79,9 @@ fun DialogToUpdateObject(
     promptSection: String,
     promptDescription: String,
     buttonText: String,
+    updateGeoNote: (GeoNoteDisplayable) -> Unit,
     onDismiss: (Double, Double) -> Unit,
-
-    ) {
+) {
     Dialog(onDismissRequest = { onDismiss(geoNoteToUpdate.latitude, geoNoteToUpdate.longitude) }) {
         Card {
             Box(contentAlignment = Alignment.Center) {
@@ -90,7 +91,9 @@ fun DialogToUpdateObject(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Loc: ${geoNoteToUpdate.latitude}, ${geoNoteToUpdate.longitude}",
+                        text = stringResource(id = R.string.hint32)
+                                + " "
+                                + "${geoNoteToUpdate.latitude}, ${geoNoteToUpdate.longitude}",
                         style = MaterialTheme.typography.h6,
                         modifier = Modifier.padding(5.dp)
                     )
@@ -108,8 +111,7 @@ fun DialogToUpdateObject(
                                 .weight(0.5f),
                             label = { Text(text = promptTitle) },
                             colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedBorderColor = color2,
-                                focusedLabelColor = color2
+                                focusedBorderColor = color2, focusedLabelColor = color2
                             )
                         )
                         OutlinedTextField(
@@ -121,8 +123,7 @@ fun DialogToUpdateObject(
                                 .weight(0.5f),
                             label = { Text(text = promptSection) },
                             colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedBorderColor = color2,
-                                focusedLabelColor = color2
+                                focusedBorderColor = color2, focusedLabelColor = color2
                             )
                         )
                     }
@@ -132,13 +133,12 @@ fun DialogToUpdateObject(
                         modifier = Modifier.size(300.dp),
                         label = { Text(text = promptDescription) },
                         colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = color2,
-                            focusedLabelColor = color2
+                            focusedBorderColor = color2, focusedLabelColor = color2
                         )
                     )
                     OutlinedButton(onClick = {
-                        viewModel.updateGeoNote(
-                            geoNote = geoNoteToUpdate.copy(
+                        updateGeoNote(
+                            geoNoteToUpdate.copy(
                                 section = section.value,
                                 title = title.value,
                                 note = description.value
@@ -153,14 +153,12 @@ fun DialogToUpdateObject(
 
         }
     }
-
 }
 
 @Composable
 fun DialogToSaveObject(
     latitude: Double,
     longitude: Double,
-    viewModel: MapViewModel,
     title: MutableState<String>,
     description: MutableState<String>,
     section: MutableState<String>,
@@ -168,6 +166,8 @@ fun DialogToSaveObject(
     promptSection: String,
     promptDescription: String,
     buttonText: String,
+    saveGeoNoteToLocal: (GeoNoteDisplayable) -> Unit,
+    updateLocationToZoom: (GeoPoint?) -> Unit,
     onDismiss: (Double, Double) -> Unit
 ) {
     Dialog(onDismissRequest = { onDismiss(latitude, longitude) }) {
@@ -179,7 +179,9 @@ fun DialogToSaveObject(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Loc: $latitude, $longitude",
+                        text = stringResource(id = R.string.hint32)
+                                + " "
+                                + "$latitude, $longitude",
                         style = MaterialTheme.typography.h6,
                         modifier = Modifier.padding(5.dp)
                     )
@@ -197,8 +199,7 @@ fun DialogToSaveObject(
                                 .weight(0.5f),
                             label = { Text(text = promptTitle) },
                             colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedBorderColor = color2,
-                                focusedLabelColor = color2
+                                focusedBorderColor = color2, focusedLabelColor = color2
                             )
                         )
                         OutlinedTextField(
@@ -210,8 +211,7 @@ fun DialogToSaveObject(
                                 .weight(0.5f),
                             label = { Text(text = promptSection) },
                             colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedBorderColor = color2,
-                                focusedLabelColor = color2
+                                focusedBorderColor = color2, focusedLabelColor = color2
                             )
                         )
                     }
@@ -221,13 +221,12 @@ fun DialogToSaveObject(
                         modifier = Modifier.size(300.dp),
                         label = { Text(text = promptDescription) },
                         colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = color2,
-                            focusedLabelColor = color2
+                            focusedBorderColor = color2, focusedLabelColor = color2
                         )
                     )
                     OutlinedButton(
                         onClick = {
-                            viewModel.saveGeoNoteToLocal(
+                            saveGeoNoteToLocal(
                                 GeoNoteDisplayable(
                                     id = UUID.randomUUID(),
                                     section = section.value,
@@ -238,16 +237,14 @@ fun DialogToSaveObject(
                                     longitude = longitude
                                 )
                             )
-                            viewModel.updateLocationToZoom(GeoPoint(latitude, longitude))
+                            updateLocationToZoom(GeoPoint(latitude, longitude))
                             onDismiss(latitude, longitude)
-                        },
-                        enabled = (latitude != 0.0 && longitude != 0.0)
+                        }, enabled = (latitude != 0.0 && longitude != 0.0)
                     ) {
                         Text(text = buttonText)
                     }
                 }
             }
-
         }
     }
 }

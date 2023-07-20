@@ -3,7 +3,4 @@
     <files-path
         name="pdf_documents"
         path="." />
-    <!--    <files-path-->
-    <!--        name="estimationPdf"-->
-    <!--        path="/data/data/com.example.szacunki/files/" />-->
 </paths>

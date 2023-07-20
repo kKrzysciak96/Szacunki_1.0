@@ -28,7 +28,7 @@ import com.example.szacunki.core.extensions.showShortHint
 import com.example.szacunki.core.extensions.toLocalDate
 import com.example.szacunki.core.extensions.trimToDisplaySectionNumber
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
-import com.example.szacunki.features.pdf.creator.PdfGenerator
+import com.example.szacunki.features.pdf.creator.PdfGenerator.generatePdf
 import com.example.szacunki.ui.theme.color2
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -44,6 +44,7 @@ fun BottomInfoBar(
     scope: CoroutineScope,
     navigateToPdfViewerScreen: (String) -> Unit
 ) {
+
     BottomAppBar(
         modifier = Modifier
             .fillMaxWidth()
@@ -62,11 +63,14 @@ fun BottomInfoBar(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 PdfIconButton(
+                    key = estimation,
                     onLongPress = {
-                        val path = PdfGenerator.generatePdf(context, estimation)
+                        val path = generatePdf(context, estimation)
                         navigateToPdfViewerScreen(path)
                     },
-                    onTap = { context.showShortHint(R.string.hint5) })
+                    onTap = {
+                        context.showShortHint(R.string.hint5)
+                    })
                 CustomNavigationButton(
                     sectionNumberDescription = stringResource(
                         R.string.hint6,
@@ -100,7 +104,7 @@ fun BottomInfoBar(
 }
 
 @Composable
-private fun PdfIconButton(onLongPress: () -> Unit, onTap: () -> Unit) {
+private fun PdfIconButton(key: EstimationDisplayable, onLongPress: () -> Unit, onTap: () -> Unit) {
     Icon(imageVector = ImageVector.vectorResource(id = R.drawable.ic_pdf),
         contentDescription = null,
         modifier = Modifier
@@ -108,7 +112,7 @@ private fun PdfIconButton(onLongPress: () -> Unit, onTap: () -> Unit) {
             .height(40.dp)
             .width(40.dp)
             .background(color2)
-            .pointerInput(Unit) {
+            .pointerInput(key) {
                 detectTapGestures(onLongPress = { onLongPress() }, onTap = { onTap() })
             })
 }

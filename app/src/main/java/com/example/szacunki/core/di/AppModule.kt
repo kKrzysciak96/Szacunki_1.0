@@ -8,6 +8,10 @@ import com.example.szacunki.core.location.LocationProvider
 import com.example.szacunki.core.location.LocationProviderImpl
 import com.example.szacunki.core.screen.general.GeneralViewModel
 import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -18,6 +22,7 @@ val appModule = module {
     factory { androidContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager }
     factory<LocationProvider> { LocationProviderImpl(get(), get(), get()) }
     factory<GpsStateProvider> { GpsStateProviderImpl(get()) }
+    factory { CoroutineScope(context = SupervisorJob() + Dispatchers.IO + CoroutineName("CustomGlobalScope")) }
     viewModel { GeneralViewModel() }
 
 }

@@ -3,7 +3,7 @@ package com.example.szacunki.features.map.data
 import android.content.Context
 import android.content.SharedPreferences
 import com.example.szacunki.features.map.domain.SharedPreferencesRepository
-import com.example.szacunki.features.map.presentation.model.CameraState
+import com.example.szacunki.features.map.presentation.custom.CameraState
 
 class SharedPreferencesRepositoryImpl(private val context: Context) : SharedPreferencesRepository {
     override suspend fun saveCameraState(cameraState: CameraState) {

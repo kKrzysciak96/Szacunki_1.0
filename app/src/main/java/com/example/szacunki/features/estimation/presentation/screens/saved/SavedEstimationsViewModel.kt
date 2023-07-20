@@ -15,16 +15,11 @@ class SavedEstimationsViewModel(private val estimationRepository: EstimationRepo
 
     var estimations = getAllEstimations()
 
-    private var _estimation = MutableStateFlow<EstimationDisplayable?>(null)
-    val estimation = _estimation.asStateFlow()
+    private var _estimationToDelete = MutableStateFlow<EstimationDisplayable?>(null)
+    val estimationToDelete = _estimationToDelete.asStateFlow()
 
     private fun getAllEstimations() = estimationRepository.getAllEstimationsFromLocal()
         .map { estimationDomain -> estimationDomain.map { EstimationDisplayable(it) } }
-
-
-    fun updateEstimation(estimationDisplayable: EstimationDisplayable) {
-        viewModelScope.launch { estimationRepository.updateEstimation(estimationDisplayable.toEstimationDomain()) }
-    }
 
     fun deleteEstimation(estimationDisplayable: EstimationDisplayable) {
         viewModelScope.launch { estimationRepository.deleteEstimation(estimationDisplayable.toEstimationDomain()) }
@@ -34,7 +29,7 @@ class SavedEstimationsViewModel(private val estimationRepository: EstimationRepo
         viewModelScope.launch { estimationRepository.dropDataBase() }
     }
 
-    fun updateEstimationFlow(estimation: EstimationDisplayable) {
-        _estimation.update { estimation }
+    fun updateEstimation(estimation: EstimationDisplayable) {
+        _estimationToDelete.update { estimation }
     }
 }

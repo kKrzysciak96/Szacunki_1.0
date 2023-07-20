@@ -23,6 +23,21 @@
     <string name="hint21">Usuń stare Pdf-y</string>
     <string name="hint22">Wpisz numer oddziału</string>
     <string name="hint23">Potwierdź</string>
-
-
+    <string name="hint24">Wybierz drzewa</string>
+    <string name="hint25">Rozpocznij pracę</string>
+    <string name="hint26">Włącz Lokalizację</string>
+    <string name="hint27">Czy napewno usunąć marker?</string>
+    <string name="hint28">Wpisz Tytuł</string>
+    <string name="hint29">Wpisz Oddział</string>
+    <string name="hint30">Aktualizuj Obiekt</string>
+    <string name="hint31">Dodaj Obiekt</string>
+    <string name="hint32">Loc:</string>
+    <string name="hint33">oddział: %1$s</string>
+    <string name="hint34">Klasa_1</string>
+    <string name="hint35">Klasa_2</string>
+    <string name="hint36">Klasa_3</string>
+    <string name="hint37">Klasa_A</string>
+    <string name="hint38">Klasa_B</string>
+    <string name="hint39">Klasa_C</string>
+    <string name="hint40">Wysokość</string>
 </resources>

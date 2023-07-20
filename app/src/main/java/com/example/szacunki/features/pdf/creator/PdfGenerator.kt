@@ -1,8 +1,9 @@
 package com.example.szacunki.features.pdf.creator
 
 import android.content.Context
+import com.example.szacunki.R
+import com.example.szacunki.core.extensions.createPdfFileName
 import com.example.szacunki.core.extensions.prepareDateToDisplay
-import com.example.szacunki.core.extensions.prepareDateToSave
 import com.example.szacunki.core.extensions.toLocalDateTime
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
 import com.example.szacunki.features.estimation.presentation.model.TreeDisplayable
@@ -11,6 +12,7 @@ import com.itextpdf.io.font.FontProgramFactory
 import com.itextpdf.kernel.colors.Color
 import com.itextpdf.kernel.colors.ColorConstants
 import com.itextpdf.kernel.colors.DeviceRgb
+import com.itextpdf.kernel.font.PdfFont
 import com.itextpdf.kernel.font.PdfFontFactory
 import com.itextpdf.kernel.pdf.PdfDocument
 import com.itextpdf.kernel.pdf.PdfWriter
@@ -24,96 +26,101 @@ import com.itextpdf.layout.property.UnitValue
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.path.exists
 
 object PdfGenerator {
-
-
     fun generatePdf(context: Context, estimation: EstimationDisplayable): String {
 
-        val dirPath = "/data/data/com.example.szacunki/files/estimationPdf" // do const vala to
-        val dirFilePath = if (Paths.get(dirPath).exists()) {
-            Paths.get(dirPath)
-        } else {
-            Files.createDirectory(Paths.get(dirPath))
-        }
+        val dirFilePath = createPath(context = context)
+        val file = createFile(estimation = estimation, dirFilePath = dirFilePath)
+        val layoutDocument = createDocument(file)
 
-        val fileName = estimation.sectionNumber + "_" + estimation.date.toLocalDateTime()
-            .prepareDateToSave() + ".pdf" // może extension ?
-//        val filePath = context.filesDir
-//        val file = File(filePath, fileName)
-
-        val file = File(dirFilePath.toFile(), fileName)
-
-        val fOut = FileOutputStream(file)
-
-        val pdfWriter = PdfWriter(fOut)
-        //Creating a PDF
-        val pdfDocument = PdfDocument(pdfWriter)
-        val layoutDocument = Document(pdfDocument)
-
-        val fontProgram = FontProgramFactory.createFont()
-        val font = PdfFontFactory.createFont(fontProgram, "CP1250")
-        val memo = "Notatka Służbowa:"
-        //set font with  polish characters
-        layoutDocument.setFont(font)
-        layoutDocument.setMargins(10F, 45F, 10F, 44F)
-
-
-        //title
-        addMemoTitle(layoutDocument, memo, estimation.date.toString())
-
-        //memo
+        setDocumentConfigurations(layoutDocument)
+        addTables(context = context, estimation = estimation, layoutDocument = layoutDocument)
+        addMemoTitle(layoutDocument, context.getString(R.string.hint8))
         addMemo(layoutDocument, estimation.memo)
+        layoutDocument.close()
+        return file.absolutePath
+    }
 
+    private fun createPath(context: Context): Path {
+        val dirStringPath = context.getString(R.string.pdf_path)
+        return if (Paths.get(dirStringPath).exists()) {
+            Paths.get(dirStringPath)
+        } else {
+            Files.createDirectory(Paths.get(dirStringPath))
+        }
+    }
 
-        //add table
+    private fun createFile(estimation: EstimationDisplayable, dirFilePath: Path): File {
+        val fileName = estimation.createPdfFileName()
+        return File(dirFilePath.toFile(), fileName)
+    }
+
+    private fun createDocument(file: File): Document {
+        val fOut = FileOutputStream(file)
+        val pdfWriter = PdfWriter(fOut)
+        val pdfDocument = PdfDocument(pdfWriter)
+        return Document(pdfDocument)
+    }
+
+    private fun setDocumentConfigurations(layoutDocument: Document) {
+        layoutDocument.apply {
+            setFont(createPolishFont())
+            setMargins(10F, 45F, 10F, 44F)
+        }
+    }
+
+    private fun createPolishFont(): PdfFont {
+        val fontProgram = FontProgramFactory.createFont()
+        return PdfFontFactory.createFont(fontProgram, "CP1250")
+    }
+
+    private fun addTables(
+        context: Context,
+        estimation: EstimationDisplayable,
+        layoutDocument: Document
+    ) {
         estimation.trees.forEachIndexed { index, tree ->
-            addTable(layoutDocument, tree, estimation.sectionNumber)
+            addTable(
+                context = context,
+                layoutDocument = layoutDocument,
+                treeDisplayable = tree,
+                sectionNumber = estimation.sectionNumber
+            )
             layoutDocument.add(
-                Paragraph(
-                    estimation.date.toLocalDateTime().prepareDateToDisplay()
-                ).setTextAlignment(TextAlignment.CENTER)
+                Paragraph(estimation.date.toLocalDateTime().prepareDateToDisplay())
+                    .setTextAlignment(TextAlignment.CENTER)
             )
             if (index != estimation.trees.lastIndex) {
                 layoutDocument.add(AreaBreak())
             }
-
-
         }
-
-
-        layoutDocument.close()
-        return file.absolutePath
-
     }
 
     private fun addTable(
-        layoutDocument: Document, treeDisplayable: TreeDisplayable, sectionNumber: String
+        context: Context,
+        layoutDocument: Document,
+        treeDisplayable: TreeDisplayable,
+        sectionNumber: String
     ) {
-
-        val color = color2
-        val colorGreen = DeviceRgb(color.red, color.green, color.blue)
-        val title = treeDisplayable.name + ", " + "oddział: $sectionNumber"
+        val colorGreen = DeviceRgb(color2.red, color2.green, color2.blue)
+        val title =
+            treeDisplayable.name.createTitle(context = context, sectionNumber = sectionNumber)
         addTreeTitle(layoutDocument, title)
         val table = Table(
-            UnitValue.createPointArray(
-                floatArrayOf(
-                    100f, 100f, 100f, 100f, 100f, 100f, 100f, 100f
-
-                )
-            )
+            UnitValue.createPointArray(floatArrayOf(100f, 100f, 100f, 100f, 100f, 100f, 100f, 100f))
         )
-
-        addTitleCell(table, "Średnica", colorGreen)
-        addTitleCell(table, "Klasa_1", colorGreen)
-        addTitleCell(table, "Klasa_2", colorGreen)
-        addTitleCell(table, "Klasa_3", colorGreen)
-        addTitleCell(table, "Klasa_A", colorGreen)
-        addTitleCell(table, "Klasa_B", colorGreen)
-        addTitleCell(table, "Klasa_C", colorGreen)
-        addTitleCell(table, "Wysokość", colorGreen)
+        addTitleCell(table, context.getString(R.string.hint11), colorGreen)
+        addTitleCell(table, context.getString(R.string.hint34), colorGreen)
+        addTitleCell(table, context.getString(R.string.hint35), colorGreen)
+        addTitleCell(table, context.getString(R.string.hint36), colorGreen)
+        addTitleCell(table, context.getString(R.string.hint37), colorGreen)
+        addTitleCell(table, context.getString(R.string.hint38), colorGreen)
+        addTitleCell(table, context.getString(R.string.hint39), colorGreen)
+        addTitleCell(table, context.getString(R.string.hint40), colorGreen)
 
         treeDisplayable.treeRows.forEachIndexed { index, item ->
             val color = if (index % 2 != 0) {
@@ -130,30 +137,26 @@ object PdfGenerator {
             addBodyCell(table, item.treeQualityClasses.classC.toString(), color)
             addBodyCell(table, item.height.toString(), color)
         }
-
         layoutDocument.add(table)
-
-
     }
 
-    private fun addMemoTitle(layoutDocument: Document, header: String, date: String) {
+    private fun addMemoTitle(layoutDocument: Document, header: String) {
         layoutDocument.add(
             Cell().add(
-                Paragraph(header).setBold().setUnderline().setTextAlignment(TextAlignment.LEFT)
-            ).setFontSize(16F)
+                Paragraph(header).setBold().setFontSize(20F).setUnderline()
+                    .setTextAlignment(TextAlignment.LEFT)
+            )
         )
+    }
 
+    private fun addMemo(layoutDocument: Document, memo: String) {
+        layoutDocument.add(Paragraph(memo).setFontSize(12F))
     }
 
     private fun addTreeTitle(layoutDocument: Document, header: String) {
         layoutDocument.add(
             Paragraph(header).setBold().setFontSize(20F).setTextAlignment(TextAlignment.LEFT)
         )
-
-    }
-
-    private fun addMemo(layoutDocument: Document, memo: String) {
-        layoutDocument.add(Paragraph(memo).setFontSize(12F))
     }
 
     private fun addTitleCell(table: Table, text: String, color: Color) {
@@ -161,8 +164,7 @@ object PdfGenerator {
             Cell().add(
                 Paragraph(text).setFontColor(ColorConstants.WHITE).setBold()
                     .setTextAlignment(TextAlignment.CENTER)
-            )
-                .setBackgroundColor(color)
+            ).setBackgroundColor(color)
         )
     }
 
@@ -173,5 +175,6 @@ object PdfGenerator {
         )
     }
 
-
+    private fun String.createTitle(context: Context, sectionNumber: String) =
+        this + ", " + context.getString(R.string.hint33, sectionNumber)
 }

@@ -7,7 +7,7 @@ fun String.trimToDisplay() = if (this.length > 12) {
 }
 
 fun String.trimToDisplaySectionNumber() = if (this.length > 7) {
-    this.substring(0..6) + "."
+    this.substring(0..4) + "."
 } else {
     this
 }

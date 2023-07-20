@@ -134,3 +134,6 @@ fun EstimationDisplayable.performAddition(
     }
 }
 
+fun EstimationDisplayable.createPdfFileName() =
+    this.sectionNumber + "_" + this.date.toLocalDateTime().prepareDateToSave() + ".pdf"
+

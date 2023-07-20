@@ -9,7 +9,6 @@ class CustomMapListener(val listener: () -> Unit) : MapListener {
         listener()
         return false
     }
-
     override fun onZoom(event: ZoomEvent?): Boolean {
         return false
     }
