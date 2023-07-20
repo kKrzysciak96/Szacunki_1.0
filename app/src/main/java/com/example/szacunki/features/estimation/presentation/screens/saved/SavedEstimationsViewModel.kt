@@ -1,17 +1,27 @@
 package com.example.szacunki.features.estimation.presentation.screens.saved
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.szacunki.core.extensions.calculateFolderSize
+import com.example.szacunki.core.extensions.formatSize
 import com.example.szacunki.features.estimation.domain.EstimationRepository
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
 
-class SavedEstimationsViewModel(private val estimationRepository: EstimationRepository) :
+class SavedEstimationsViewModel(
+    private val estimationRepository: EstimationRepository
+) :
     ViewModel() {
+    private val _folderSize = MutableStateFlow("")
+    val folderSize = _folderSize.asStateFlow()
+
+    private val _message = MutableSharedFlow<String>()
+    val message = _message.asSharedFlow()
 
     var estimations = getAllEstimations()
 
@@ -31,5 +41,20 @@ class SavedEstimationsViewModel(private val estimationRepository: EstimationRepo
 
     fun updateEstimation(estimation: EstimationDisplayable) {
         _estimationToDelete.update { estimation }
+    }
+
+    fun emitMessage(message: String) {
+        viewModelScope.launch {
+            _message.emit(message)
+        }
+    }
+
+    fun calculateFolderSize(context: Context) {
+        viewModelScope.launch {
+            val folderPath = context.filesDir.absolutePath + File.separator + "estimationPdf"
+            withContext(Dispatchers.IO) {
+                _folderSize.value = File(folderPath).calculateFolderSize().formatSize()
+            }
+        }
     }
 }

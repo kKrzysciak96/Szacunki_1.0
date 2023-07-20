@@ -25,7 +25,7 @@ fun ObjectDialog(
     longitude: Double,
     updateGeoNote: (GeoNoteDisplayable) -> Unit,
     saveGeoNoteToLocal: (GeoNoteDisplayable) -> Unit,
-    updateLocationToZoom: (GeoPoint?) -> Unit,
+    updateLocationToZoom: (GeoPoint) -> Unit,
     onDismiss: (Double, Double) -> Unit
 ) {
     val title = rememberSaveable { mutableStateOf("") }
@@ -167,7 +167,7 @@ fun DialogToSaveObject(
     promptDescription: String,
     buttonText: String,
     saveGeoNoteToLocal: (GeoNoteDisplayable) -> Unit,
-    updateLocationToZoom: (GeoPoint?) -> Unit,
+    updateLocationToZoom: (GeoPoint) -> Unit,
     onDismiss: (Double, Double) -> Unit
 ) {
     Dialog(onDismissRequest = { onDismiss(latitude, longitude) }) {

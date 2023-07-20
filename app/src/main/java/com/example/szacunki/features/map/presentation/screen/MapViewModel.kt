@@ -3,6 +3,7 @@ package com.example.szacunki.features.map.presentation.screen
 import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.szacunki.core.extensions.toLocation
 import com.example.szacunki.core.gps.GpsStateProvider
 import com.example.szacunki.core.location.LocationProvider
 import com.example.szacunki.features.map.domain.MapRepository
@@ -30,7 +31,7 @@ class MapViewModel(
     private val _cameraState = MutableStateFlow(CameraState(0.0, 0.0, 15.0))
     val cameraState = _cameraState.asStateFlow()
 
-    private var _locationToZoom = MutableStateFlow<GeoPoint?>(null)
+    private var _locationToZoom = MutableStateFlow(Location(""))
     val locationToZoom = _locationToZoom.asStateFlow()
 
     private val _geoNotes = MutableStateFlow<List<GeoNoteDisplayable>>(emptyList())
@@ -57,8 +58,8 @@ class MapViewModel(
         _cameraState.update { CameraState(latitude, longitude, zoom) }
     }
 
-    fun updateLocationToZoom(geoPoint: GeoPoint?) {
-        _locationToZoom.update { geoPoint }
+    fun updateLocationToZoom(geoPoint: GeoPoint) {
+        _locationToZoom.update { geoPoint.toLocation() }
     }
 
     private fun getAllGeoNotesState() {
@@ -102,9 +103,7 @@ class MapViewModel(
                 location.longitude = cameraState.longitude
                 _cameraState.update { cameraState }
                 _locationToZoom.update {
-                    GeoPoint(
-                        cameraState.latitude, cameraState.longitude
-                    )
+                    location
                 }
             }
         }
@@ -134,7 +133,7 @@ class MapViewModel(
 
     fun onDestroyActivity() {
         _locationToZoom.update {
-            GeoPoint(
+            createLocationFrom(
                 cameraState.value.latitude, cameraState.value.longitude
             )
         }
@@ -144,4 +143,12 @@ class MapViewModel(
         super.onCleared()
         saveCameraState()
     }
+
+    private fun createLocationFrom(latitude: Double, longitude: Double): Location {
+        val location = Location("")
+        location.latitude = latitude
+        location.longitude = longitude
+        return location
+    }
 }
+

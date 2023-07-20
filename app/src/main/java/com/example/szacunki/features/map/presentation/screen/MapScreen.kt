@@ -74,9 +74,11 @@ fun MapScreen(viewModel: MapViewModel = koinViewModel()) {
         mapView.apply {
             setMapConfigurations()
             setTileSource(TileSourceFactory.MAPNIK)
-            addPinFeature(longPressHelperListener = {
-                viewModel.updateLocationToZoom(it)
-                isObjectOnMapClickedDialogVisible.value = true
+            addPinFeature(longPressHelperListener = { geoPoint ->
+                geoPoint?.let {
+                    viewModel.updateLocationToZoom(it)
+                    isObjectOnMapClickedDialogVisible.value = true
+                }
             })
             val listener: MapListener = CustomMapListener {
                 viewModel.updateCameraState(
@@ -122,7 +124,7 @@ fun MapScreen(
     viewModel: MapViewModel,
     mapView: MapView,
     isGpsEnabled: Boolean,
-    locationToZoom: GeoPoint?,
+    locationToZoom: Location,
     currentLocation: Location,
     cameraState: CameraState,
     geoNotes: List<GeoNoteDisplayable>,
@@ -134,7 +136,7 @@ fun MapScreen(
     angle: Float,
     updateGeoNote: (GeoNoteDisplayable) -> Unit,
     saveGeoNoteToLocal: (GeoNoteDisplayable) -> Unit,
-    updateLocationToZoom: (GeoPoint?) -> Unit,
+    updateLocationToZoom: (GeoPoint) -> Unit,
     deleteGeoNote: (UUID) -> Unit
 
 ) {
@@ -235,10 +237,10 @@ private fun ShowObjectDialog(
     chosenInfoWindowId: MutableState<UUID?>,
     geoNotes: List<GeoNoteDisplayable>,
     currentLocation: Location,
-    locationToZoom: GeoPoint?,
+    locationToZoom: Location,
     updateGeoNote: (GeoNoteDisplayable) -> Unit,
     saveGeoNoteToLocal: (GeoNoteDisplayable) -> Unit,
-    updateLocationToZoom: (GeoPoint?) -> Unit
+    updateLocationToZoom: (GeoPoint) -> Unit
 
 ) {
     if (isObjectToUpdateDialogVisible.value || isObjectOnMapClickedDialogVisible.value) {
@@ -250,12 +252,12 @@ private fun ShowObjectDialog(
             latitude = if (isObjectToUpdateDialogVisible.value) {
                 currentLocation.latitude
             } else {
-                locationToZoom?.latitude ?: 0.0
+                locationToZoom.latitude
             },
             longitude = if (isObjectToUpdateDialogVisible.value) {
                 currentLocation.longitude
             } else {
-                locationToZoom?.longitude ?: 0.0
+                locationToZoom.longitude
             },
             updateGeoNote = updateGeoNote,
             saveGeoNoteToLocal = saveGeoNoteToLocal,
@@ -322,7 +324,7 @@ private fun LastKnownLocationParameters(
 @Composable
 private fun GoToLastKnownPositionIconButton(
     mapView: MapView,
-    locationToZoom: GeoPoint?,
+    locationToZoom: Location,
     currentLocation: Location,
     modifier: Modifier,
 ) {

@@ -1,6 +1,7 @@
 package com.example.szacunki.features.estimation.presentation.screens.saved
 
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -41,15 +42,32 @@ fun SavedEstimationsScreen(
     navigator: DestinationsNavigator, viewModel: SavedEstimationsViewModel = koinViewModel()
 ) {
     val estimations = viewModel.estimations.collectAsState(emptyList())
+    val folderSize = viewModel.folderSize.collectAsState()
     val deleteDialogVisible = rememberSaveable { mutableStateOf(false) }
     val estimationToDelete = viewModel.estimationToDelete.collectAsState()
+    val context = LocalContext.current
+    LaunchedEffect(key1 = Unit, block = {
+        viewModel.message.collect { message ->
+            Toast.makeText(
+                context,
+                message,
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    })
+    LaunchedEffect(key1 = Unit, block = {
+        viewModel.calculateFolderSize(context)
+    })
 
     SavedEstimationsScreen(
+        folderSize = folderSize.value,
         estimations = estimations.value,
         deleteDialogVisible = deleteDialogVisible,
         estimationToDelete = estimationToDelete.value,
         updateEstimation = viewModel::updateEstimation,
         deleteEstimation = viewModel::deleteEstimation,
+        emitMessage = viewModel::emitMessage,
+        calculateFolderSize = viewModel::calculateFolderSize,
         navigateToEstimationsScreen = navigator::navigateToEstimationsScreen,
         navigateToPdfViewerScreen = navigator::navigateToPdfViewerScreen
     )
@@ -57,18 +75,27 @@ fun SavedEstimationsScreen(
 
 @Composable
 private fun SavedEstimationsScreen(
+    folderSize: String,
     estimations: List<EstimationDisplayable>,
     deleteDialogVisible: MutableState<Boolean>,
     estimationToDelete: EstimationDisplayable?,
     updateEstimation: (EstimationDisplayable) -> Unit,
     deleteEstimation: (EstimationDisplayable) -> Unit,
+    emitMessage: (String) -> Unit,
+    calculateFolderSize: (Context) -> Unit,
     navigateToEstimationsScreen: (UUID?) -> Unit,
     navigateToPdfViewerScreen: (String) -> Unit
 ) {
     key(deleteDialogVisible.value) {
         Scaffold(
             topBar = { SavedEstimationsTopBar() },
-            bottomBar = { SavedEstimationsBottomBar() },
+            bottomBar = {
+                SavedEstimationsBottomBar(
+                    folderSize = folderSize,
+                    emitMessage = emitMessage,
+                    calculateFolderSize = calculateFolderSize
+                )
+            },
             content = {
                 estimationToDelete?.let { estimation ->
                     if (deleteDialogVisible.value) {
@@ -82,6 +109,7 @@ private fun SavedEstimationsScreen(
                     estimations = estimations,
                     navigateToEstimationsScreen = navigateToEstimationsScreen,
                     navigateToPdfViewerScreen = navigateToPdfViewerScreen,
+                    calculateFolderSize = calculateFolderSize,
                     onSwipeToDismiss = { estimation ->
                         updateEstimation(estimation)
                         deleteDialogVisible.value = true
@@ -96,6 +124,7 @@ fun AllSavedEstimationsContent(
     estimations: List<EstimationDisplayable>,
     navigateToEstimationsScreen: (UUID?) -> Unit,
     navigateToPdfViewerScreen: (String) -> Unit,
+    calculateFolderSize: (Context) -> Unit,
     onSwipeToDismiss: (EstimationDisplayable) -> Unit,
 ) {
     val context = LocalContext.current
@@ -112,6 +141,7 @@ fun AllSavedEstimationsContent(
                 estimation = estimation,
                 navigateToEstimationsScreen = navigateToEstimationsScreen,
                 navigateToPdfViewerScreen = navigateToPdfViewerScreen,
+                calculateFolderSize = calculateFolderSize,
                 onSwipeToDismiss = onSwipeToDismiss
             )
         }
@@ -125,6 +155,7 @@ fun EstimationRow(
     estimation: EstimationDisplayable,
     navigateToEstimationsScreen: (UUID?) -> Unit,
     navigateToPdfViewerScreen: (String) -> Unit,
+    calculateFolderSize: (Context) -> Unit,
     onSwipeToDismiss: (EstimationDisplayable) -> Unit
 ) {
     val dismissState = rememberDismissState(confirmStateChange = {
@@ -176,7 +207,8 @@ fun EstimationRow(
                     SendIcon(
                         modifier = Modifier.weight(0.5F),
                         context = context,
-                        estimation = estimation
+                        estimation = estimation,
+                        calculateFolderSize = calculateFolderSize
                     )
                     ShowPdfIcon(
                         modifier = Modifier.weight(0.5F),
@@ -203,8 +235,14 @@ fun BackgroundSwipeToDismissIcon() {
 }
 
 @Composable
-fun SendIcon(modifier: Modifier, context: Context, estimation: EstimationDisplayable) {
-    Icon(painter = painterResource(id = R.drawable.ic_send),
+fun SendIcon(
+    modifier: Modifier,
+    context: Context,
+    estimation: EstimationDisplayable,
+    calculateFolderSize: (Context) -> Unit,
+) {
+    Icon(
+        painter = painterResource(id = R.drawable.ic_send),
         contentDescription = null,
         modifier = modifier
             .size(50.dp)
@@ -216,6 +254,7 @@ fun SendIcon(modifier: Modifier, context: Context, estimation: EstimationDisplay
                     context, "com.example.szacunki.fileprovider", file
                 )
                 context.shareFile(uri)
+                calculateFolderSize(context)
             })
 }
 

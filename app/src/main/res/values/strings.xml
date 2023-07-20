@@ -19,7 +19,7 @@
     <string name="hint17">USUŃ</string>
     <string name="hint18">WRÓĆ</string>
     <string name="hint19">Zapisane Szacunki Brakarskie</string>
-    <string name="hint20">Zwolniono %1$s pamięci</string>
+    <string name="hint20">Rozmiar: %1$s</string>
     <string name="hint21">Usuń stare Pdf-y</string>
     <string name="hint22">Wpisz numer oddziału</string>
     <string name="hint23">Potwierdź</string>
@@ -40,4 +40,5 @@
     <string name="hint38">Klasa_B</string>
     <string name="hint39">Klasa_C</string>
     <string name="hint40">Wysokość</string>
+    <string name="hint41">Wyczyszczono pamięć</string>
 </resources>

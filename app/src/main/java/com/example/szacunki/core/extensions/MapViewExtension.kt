@@ -53,12 +53,8 @@ fun MapView.goToPosition(geoPoint: GeoPoint?) {
     )
 }
 
-fun MapView.goToPosition(geoPoint: GeoPoint?, zoom: Double) {
-    this.controller.animateTo(
-        GeoPoint(
-            geoPoint?.latitude ?: 0.0, geoPoint?.longitude ?: 0.0
-        ), zoom, 500L
-    )
+fun MapView.goToPosition(location: Location, zoom: Double) {
+    this.controller.animateTo(location.toGeoPoint(), zoom, 500L)
 }
 
 fun MapView.createCustomMarker(
