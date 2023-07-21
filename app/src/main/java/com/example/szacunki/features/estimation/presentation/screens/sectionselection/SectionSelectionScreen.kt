@@ -25,7 +25,7 @@ import com.example.szacunki.ui.theme.color2
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
-@Destination(route = "SectionSelectionScreen")
+@Destination
 @Composable
 fun SectionSelectionScreen(navigator: DestinationsNavigator) {
     val text = remember { mutableStateOf("") }

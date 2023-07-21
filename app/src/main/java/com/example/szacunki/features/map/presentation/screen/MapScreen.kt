@@ -36,7 +36,7 @@ import org.osmdroid.views.MapView
 import java.util.*
 
 
-@Destination(route = "MapScreen")
+@Destination
 @Composable
 fun MapScreen(viewModel: MapViewModel = koinViewModel()) {
     val context = LocalContext.current

@@ -26,6 +26,7 @@ import com.example.szacunki.core.extensions.shareFile
 import com.example.szacunki.core.extensions.toLocalDateTime
 import com.example.szacunki.core.extensions.trimToDisplaySectionNumber
 import com.example.szacunki.destinations.EstimationScreenDestination
+import com.example.szacunki.destinations.PdfViewerDestination
 import com.example.szacunki.destinations.PdfViewerScreenDestination
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
 import com.example.szacunki.features.pdf.creator.PdfGenerator.generatePdf
@@ -69,7 +70,8 @@ fun SavedEstimationsScreen(
         emitMessage = viewModel::emitMessage,
         calculateFolderSize = viewModel::calculateFolderSize,
         navigateToEstimationsScreen = navigator::navigateToEstimationsScreen,
-        navigateToPdfViewerScreen = navigator::navigateToPdfViewerScreen
+//        navigateToPdfViewerScreen = navigator::navigateToPdfViewerScreen
+        navigateToPdfViewerScreen = navigator::navigateToPdfViewer
     )
 }
 
@@ -306,4 +308,8 @@ private fun DestinationsNavigator.navigateToEstimationsScreen(id: UUID?) {
 
 private fun DestinationsNavigator.navigateToPdfViewerScreen(path: String) {
     navigate(PdfViewerScreenDestination(path))
+}
+
+private fun DestinationsNavigator.navigateToPdfViewer(path: String) {
+    navigate(PdfViewerDestination(path))
 }

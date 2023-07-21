@@ -9,6 +9,8 @@ import com.example.szacunki.features.estimation.presentation.model.EstimationDis
 import com.example.szacunki.features.estimation.presentation.model.TreeDisplayable
 import com.example.szacunki.ui.theme.color2
 import com.itextpdf.io.font.FontProgramFactory
+import com.itextpdf.io.font.PdfEncodings
+import com.itextpdf.io.font.constants.StandardFonts
 import com.itextpdf.kernel.colors.Color
 import com.itextpdf.kernel.colors.ColorConstants
 import com.itextpdf.kernel.colors.DeviceRgb
@@ -74,8 +76,8 @@ object PdfGenerator {
     }
 
     private fun createPolishFont(): PdfFont {
-        val fontProgram = FontProgramFactory.createFont()
-        return PdfFontFactory.createFont(fontProgram, "CP1250")
+        val fontProgram = FontProgramFactory.createFont(StandardFonts.COURIER)
+        return PdfFontFactory.createFont(fontProgram, PdfEncodings.CP1250, false)
     }
 
     private fun addTables(

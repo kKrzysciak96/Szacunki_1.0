@@ -10,7 +10,9 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-
+        maven {
+            url 'https://customers.pspdfkit.com/maven/'
+        }
     }
 }
 rootProject.name = "Szacunki"

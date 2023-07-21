@@ -28,7 +28,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import org.koin.androidx.compose.koinViewModel
 
 @RootNavGraph(start = true)
-@Destination(route = "GeneralScreen")
+@Destination
 @Composable
 fun GeneralScreen(navigator: DestinationsNavigator, viewModel: MapViewModel = koinViewModel()) {
     val context = LocalContext.current
@@ -39,8 +39,6 @@ fun GeneralScreen(navigator: DestinationsNavigator, viewModel: MapViewModel = ko
         navigateToSavedEstimationsScreen = navigator::navigateToSavedEstimationsScreen
     )
 }
-
-// wstrzyknij do konstruktora viewModel
 @Composable
 private fun GeneralScreen(
     context: Context,

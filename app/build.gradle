@@ -58,7 +58,6 @@ configurations.all {
         }
 }
 
-
 dependencies {
 
     implementation 'androidx.core:core-ktx:1.10.1'
@@ -97,7 +96,6 @@ dependencies {
     //gson
     implementation 'com.google.code.gson:gson:2.10.1'
 
-
     //implementation("androidx.compose.foundation:foundation:1.4.3")
 
     //pdf view
@@ -112,6 +110,8 @@ dependencies {
     implementation 'org.osmdroid:osmdroid-android:6.1.16'
     //WMS services
     implementation 'org.osmdroid:osmdroid-wms:6.1.16'
+
+    implementation("io.coil-kt:coil-compose:2.4.0")
 
 
 }

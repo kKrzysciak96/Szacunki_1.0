@@ -31,7 +31,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 
-@Destination(route = "TreeSelectionScreen")
+@Destination
 @Composable
 fun TreeSelectionScreen(
     sectionNumber: String, navigator: DestinationsNavigator

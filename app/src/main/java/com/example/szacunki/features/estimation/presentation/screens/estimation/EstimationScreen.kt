@@ -21,7 +21,7 @@ import org.koin.androidx.compose.getViewModel
 import java.util.*
 
 
-@Destination(route = "EstimationScreen")
+@Destination
 @Composable
 fun EstimationScreen(
     id: UUID?, sectionNumber: String?, treeNames: Array<String>?, navigator: DestinationsNavigator
