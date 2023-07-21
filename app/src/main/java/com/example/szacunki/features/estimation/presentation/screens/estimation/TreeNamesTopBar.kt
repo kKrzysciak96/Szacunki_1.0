@@ -7,11 +7,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
@@ -26,8 +28,8 @@ import com.example.szacunki.core.extensions.showLongHint
 import com.example.szacunki.core.extensions.trimToDisplay
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
 import com.example.szacunki.features.estimation.presentation.model.TreeDisplayable
-import com.example.szacunki.ui.theme.color1
 import com.example.szacunki.ui.theme.color2
+import com.example.szacunki.ui.theme.color3
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -48,7 +50,7 @@ fun TreeNamesTopBar(
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(color1),
+                .background(color3),
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically,
             state = listState,
@@ -87,9 +89,10 @@ fun TreeNamesItem(
     val textToDisplay = item.name.trimToDisplay()
     Box(
         modifier = Modifier
+            .clip(RoundedCornerShape(2.dp))
             .height(60.dp)
             .width(120.dp)
-            .background(color = if (treeIndexState.value == itemIndex) color2 else color1)
+            .background(color = if (treeIndexState.value == itemIndex) color2 else color3)
             .combinedClickable(
                 onClick = {
                     if (itemIndex != 0) {
@@ -114,6 +117,17 @@ fun TreeNamesItem(
             modifier = Modifier.padding(5.dp),
             textAlign = TextAlign.Center
         )
+
+        if (treeIndexState.value == itemIndex) {
+            Card(
+                backgroundColor = Color.White,
+                shape = RoundedCornerShape(2.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(2.dp)
+                    .align(Alignment.BottomCenter)
+            ) {}
+        }
     }
 }
 
@@ -164,7 +178,7 @@ private fun IconAddTreesItem(treeNameState: MutableState<Boolean>) {
                 modifier = Modifier
                     .height(40.dp)
                     .width(40.dp)
-                    .background(color1)
+                    .background(color2)
                     .pointerInput(Unit) {
                         detectTapGestures(
                             onLongPress = { treeNameState.value = true },

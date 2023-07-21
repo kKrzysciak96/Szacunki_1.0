@@ -44,7 +44,6 @@ fun BottomInfoBar(
     scope: CoroutineScope,
     navigateToPdfViewerScreen: (String) -> Unit
 ) {
-
     BottomAppBar(
         modifier = Modifier
             .fillMaxWidth()

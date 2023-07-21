@@ -20,17 +20,15 @@ import com.example.szacunki.core.extensions.gradientBackground
 import com.example.szacunki.destinations.MapScreenDestination
 import com.example.szacunki.destinations.SavedEstimationsScreenDestination
 import com.example.szacunki.destinations.SectionSelectionScreenDestination
-import com.example.szacunki.features.map.presentation.screen.MapViewModel
 import com.example.szacunki.ui.theme.brushList1
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import org.koin.androidx.compose.koinViewModel
 
 @RootNavGraph(start = true)
 @Destination
 @Composable
-fun GeneralScreen(navigator: DestinationsNavigator, viewModel: MapViewModel = koinViewModel()) {
+fun GeneralScreen(navigator: DestinationsNavigator) {
     val context = LocalContext.current
     GeneralScreen(
         context = context,
@@ -39,6 +37,7 @@ fun GeneralScreen(navigator: DestinationsNavigator, viewModel: MapViewModel = ko
         navigateToSavedEstimationsScreen = navigator::navigateToSavedEstimationsScreen
     )
 }
+
 @Composable
 private fun GeneralScreen(
     context: Context,

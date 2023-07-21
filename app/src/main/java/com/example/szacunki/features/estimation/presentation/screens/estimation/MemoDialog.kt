@@ -83,6 +83,4 @@ fun ConfirmButton(modifier: Modifier, onClick: () -> Unit) {
             .background(color2)
             .clickable { onClick() }
     )
-
-
 }

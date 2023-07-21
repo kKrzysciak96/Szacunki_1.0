@@ -2,6 +2,7 @@ package com.example.szacunki.features.estimation.presentation.screens.saved
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,11 +27,10 @@ import com.example.szacunki.core.extensions.shareFile
 import com.example.szacunki.core.extensions.toLocalDateTime
 import com.example.szacunki.core.extensions.trimToDisplaySectionNumber
 import com.example.szacunki.destinations.EstimationScreenDestination
-import com.example.szacunki.destinations.PdfViewerDestination
 import com.example.szacunki.destinations.PdfViewerScreenDestination
 import com.example.szacunki.features.estimation.presentation.model.EstimationDisplayable
 import com.example.szacunki.features.pdf.creator.PdfGenerator.generatePdf
-import com.example.szacunki.ui.theme.color1
+import com.example.szacunki.ui.theme.color3
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import org.koin.androidx.compose.koinViewModel
@@ -70,8 +70,7 @@ fun SavedEstimationsScreen(
         emitMessage = viewModel::emitMessage,
         calculateFolderSize = viewModel::calculateFolderSize,
         navigateToEstimationsScreen = navigator::navigateToEstimationsScreen,
-//        navigateToPdfViewerScreen = navigator::navigateToPdfViewerScreen
-        navigateToPdfViewerScreen = navigator::navigateToPdfViewer
+        navigateToPdfViewerScreen = navigator::navigateToPdfViewerScreen
     )
 }
 
@@ -183,9 +182,10 @@ fun EstimationRow(
     ) {
         Card(
             modifier = Modifier.padding(10.dp),
-            backgroundColor = color1,
-            elevation = 5.dp,
-            shape = RoundedCornerShape(10.dp)
+            backgroundColor = color3,
+            elevation = 10.dp,
+            shape = RoundedCornerShape(10.dp),
+            border = BorderStroke(1.dp, Color.Black)
         ) {
             Row(
                 modifier = Modifier
@@ -308,8 +308,4 @@ private fun DestinationsNavigator.navigateToEstimationsScreen(id: UUID?) {
 
 private fun DestinationsNavigator.navigateToPdfViewerScreen(path: String) {
     navigate(PdfViewerScreenDestination(path))
-}
-
-private fun DestinationsNavigator.navigateToPdfViewer(path: String) {
-    navigate(PdfViewerDestination(path))
 }

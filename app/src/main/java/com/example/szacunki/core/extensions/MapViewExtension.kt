@@ -2,6 +2,7 @@ package com.example.szacunki.core.extensions
 
 import android.content.Context
 import android.location.Location
+import com.example.szacunki.R
 import com.example.szacunki.features.map.presentation.custom.CustomInfoWindow
 import com.example.szacunki.features.map.presentation.custom.CustomMarker
 import com.example.szacunki.features.map.presentation.model.GeoNoteDisplayable
@@ -65,7 +66,7 @@ fun MapView.createCustomWindow(
     geoNote: GeoNoteDisplayable, onLongInfoWindowListener: (UUID) -> Unit
 ) = CustomInfoWindow(
     id = geoNote.id,
-    title = geoNote.title + "," + " " + "Oddział" + " " + geoNote.section,
+    title = geoNote.title + "," + " " + this.context.getString(R.string.hint44) + " " + geoNote.section,
     description = geoNote.note,
     mapView = this@createCustomWindow,
     onLongInfoWindowListener = onLongInfoWindowListener

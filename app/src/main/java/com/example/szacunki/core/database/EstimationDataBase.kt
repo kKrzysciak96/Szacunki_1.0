@@ -11,7 +11,7 @@ import com.example.szacunki.features.map.data.model.GeoNoteCached
 @Database(
     entities = [EstimationCached::class, GeoNoteCached::class],
     version = 1,
-    exportSchema = false
+    exportSchema = true
 )
 @TypeConverters(DateConverter::class, TreeRowCachedConverter::class, TreeCachedConverter::class)
 abstract class EstimationDataBase : RoomDatabase() {

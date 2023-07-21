@@ -41,4 +41,7 @@
     <string name="hint39">Klasa_C</string>
     <string name="hint40">Wysokość</string>
     <string name="hint41">Wyczyszczono pamięć</string>
+    <string name="hint42">WSTECZ</string>
+    <string name="hint43">DALEJ</string>
+    <string name="hint44">Oddział</string>
 </resources>

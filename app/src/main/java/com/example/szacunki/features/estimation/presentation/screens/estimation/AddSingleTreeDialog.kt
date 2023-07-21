@@ -128,7 +128,6 @@ private fun ChooseTree(
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-
         val remainingTrees = context.getBaseNameList() - presentTrees.toSet()
         items(remainingTrees) { treeName ->
             val isChecked = rememberSaveable { mutableStateOf(false) }

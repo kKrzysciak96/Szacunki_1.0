@@ -70,11 +70,9 @@ fun MarkerDeleteDialog(
                                 style = MaterialTheme.typography.h5
                             )
                         }
-
                     }
                 }
             }
-
         }
     }
 }

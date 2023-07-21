@@ -15,7 +15,11 @@ fun LocalDateTime.prepareDateToDisplay(): String {
     val month = this.monthValue.toString()
     val day = this.dayOfMonth.toString()
     val hours = this.hour.toString()
-    val minutes = this.minute.toString()
+    val minutes = if (this.minute.toString().length == 1) {
+        "0" + this.minute.toString()
+    } else {
+        this.minute.toString()
+    }
     return "$year/$month/$day $hours:$minutes"
 }
 

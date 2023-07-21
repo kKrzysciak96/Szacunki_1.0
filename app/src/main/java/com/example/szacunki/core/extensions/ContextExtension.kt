@@ -9,18 +9,11 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.example.szacunki.R
 
-fun Context.hasLocationPermission(): Boolean {
-    return (ContextCompat.checkSelfPermission(
-        this,
-        Manifest.permission.ACCESS_COARSE_LOCATION
-    )) == PackageManager.PERMISSION_GRANTED && (ContextCompat.checkSelfPermission(
-        this,
-        Manifest.permission.ACCESS_FINE_LOCATION
-    )) == PackageManager.PERMISSION_GRANTED
-}
 
 fun Context.getBaseDiameterList() = this.resources.getStringArray(R.array.baseDiameterList).toList()
+
 fun Context.getBaseNameList() = this.resources.getStringArray(R.array.baseNameList).toList()
+
 fun Context.showShortHint(id: Int) {
     Toast.makeText(this, getString(id), Toast.LENGTH_LONG).show()
 }
@@ -39,4 +32,14 @@ fun Context.shareFile(uri: Uri) {
     intent.type = "application/pdf"
     intent.putExtra(Intent.EXTRA_STREAM, uri)
     ContextCompat.startActivity(this, intent, null)
+}
+
+fun Context.hasLocationPermission(): Boolean {
+    return (ContextCompat.checkSelfPermission(
+        this,
+        Manifest.permission.ACCESS_COARSE_LOCATION
+    )) == PackageManager.PERMISSION_GRANTED && (ContextCompat.checkSelfPermission(
+        this,
+        Manifest.permission.ACCESS_FINE_LOCATION
+    )) == PackageManager.PERMISSION_GRANTED
 }

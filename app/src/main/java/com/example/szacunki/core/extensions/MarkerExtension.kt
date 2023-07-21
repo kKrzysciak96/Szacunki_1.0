@@ -23,6 +23,5 @@ fun Marker.adjustCustomMarker(
         this.id = geoNote.id.toString()
         infoWindow =
             mapView.createCustomWindow(geoNote = geoNote, onLongInfoWindowListener)
-
     }
 }

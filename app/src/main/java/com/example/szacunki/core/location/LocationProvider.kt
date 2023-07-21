@@ -5,5 +5,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface LocationProvider {
     fun getCurrentLocation(interval: Long): Flow<Location>
-    class LocationException(message: String) : Exception()
+
 }
