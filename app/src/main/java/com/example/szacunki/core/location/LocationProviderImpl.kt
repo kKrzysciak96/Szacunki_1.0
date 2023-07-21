@@ -3,7 +3,6 @@ package com.example.szacunki.core.location
 import android.annotation.SuppressLint
 import android.location.Location
 import android.os.Looper
-import android.util.Log
 import com.google.android.gms.location.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -24,7 +23,6 @@ class LocationProviderImpl(
                     super.onLocationResult(result)
                     result.locations.lastOrNull()?.let { location ->
                         launch {
-                            Log.d("LOCATION", "WYSLAŁO")
                             send(location)
                         }
                     }
