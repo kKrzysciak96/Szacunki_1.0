@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -136,16 +137,23 @@ fun DialogToUpdateObject(
                             focusedBorderColor = color2, focusedLabelColor = color2
                         )
                     )
-                    OutlinedButton(onClick = {
-                        updateGeoNote(
-                            geoNoteToUpdate.copy(
-                                section = section.value,
-                                title = title.value,
-                                note = description.value
+                    OutlinedButton(
+                        onClick = {
+                            updateGeoNote(
+                                geoNoteToUpdate.copy(
+                                    section = section.value,
+                                    title = title.value,
+                                    note = description.value
+                                )
                             )
+                            onDismiss(geoNoteToUpdate.latitude, geoNoteToUpdate.longitude)
+                        }, colors = ButtonDefaults.buttonColors(
+                            contentColor = Color.Black,
+                            disabledContentColor = Color.Gray,
+                            backgroundColor = Color.White,
+                            disabledBackgroundColor = Color.LightGray
                         )
-                        onDismiss(geoNoteToUpdate.latitude, geoNoteToUpdate.longitude)
-                    }) {
+                    ) {
                         Text(text = buttonText)
                     }
                 }
@@ -239,7 +247,13 @@ fun DialogToSaveObject(
                             )
                             updateLocationToZoom(GeoPoint(latitude, longitude))
                             onDismiss(latitude, longitude)
-                        }, enabled = (latitude != 0.0 && longitude != 0.0)
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            contentColor = Color.Black,
+                            disabledContentColor = Color.Gray,
+                            backgroundColor = Color.White,
+                            disabledBackgroundColor = Color.LightGray
+                        ), enabled = (latitude != 0.0 && longitude != 0.0)
                     ) {
                         Text(text = buttonText)
                     }
