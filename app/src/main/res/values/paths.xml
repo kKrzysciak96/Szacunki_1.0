@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="pdf_path">/data/data/com.example.szacunki/files/estimationPdf</string>
+    <string name="pdf_path">/data/data/com.eltescode.estimations/files/estimationPdf</string>
 </resources>

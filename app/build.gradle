@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.szacunki'
+    namespace 'com.eltescode.estimations'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.szacunki"
+        applicationId "com.eltescode.estimations"
         minSdk 26
         targetSdk 33
         versionCode 1
@@ -46,16 +46,6 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
-}
-configurations.all {
-    c ->
-        c.resolutionStrategy.dependencySubstitution {
-            all { DependencySubstitution dependency ->
-                if (dependency.requested.group == 'org.bouncycastle') {
-                    dependency.useTarget 'org.bouncycastle:bcprov-jdk15to18:1.72'
-                }
-            }
-        }
 }
 
 dependencies {

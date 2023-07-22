@@ -44,4 +44,7 @@
     <string name="hint42">WSTECZ</string>
     <string name="hint43">DALEJ</string>
     <string name="hint44">Oddział</string>
+    <string name="hint45">Utwórz nowy dokument</string>
+    <string name="hint46">Zobacz Zapisane</string>
+    <string name="hint47">Pokaż mapę</string>
 </resources>
