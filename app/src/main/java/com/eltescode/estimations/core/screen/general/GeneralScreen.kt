@@ -1,22 +1,24 @@
 package com.eltescode.estimations.core.screen.general
 
 import android.Manifest
-import android.content.Context
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.unit.dp
+import com.eltescode.estimations.BuildConfig
 import com.eltescode.estimations.R
 import com.eltescode.estimations.core.extensions.gradientBackground
 import com.eltescode.estimations.destinations.MapScreenDestination
@@ -31,9 +33,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @Destination
 @Composable
 fun GeneralScreen(navigator: DestinationsNavigator) {
-    val context = LocalContext.current
     GeneralScreen(
-        context = context,
         navigateToMapScreen = navigator::navigateToMapScreen,
         navigateToSectionSelectionScreen = navigator::navigateToSectionSelectionScreen,
         navigateToSavedEstimationsScreen = navigator::navigateToSavedEstimationsScreen
@@ -42,7 +42,6 @@ fun GeneralScreen(navigator: DestinationsNavigator) {
 
 @Composable
 private fun GeneralScreen(
-    context: Context,
     navigateToMapScreen: () -> Unit,
     navigateToSectionSelectionScreen: () -> Unit,
     navigateToSavedEstimationsScreen: () -> Unit
@@ -61,6 +60,16 @@ private fun GeneralScreen(
                 brushList1.gradientBackground()
             )
     ) {
+        Icon(
+            imageVector = ImageVector.vectorResource(id = R.drawable.ic_main_text),
+            contentDescription = null,
+            modifier = Modifier
+                .align(
+                    Alignment.TopCenter
+                )
+                .padding(40.dp)
+                .clickable { }
+        )
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -81,25 +90,32 @@ private fun GeneralScreen(
                 }
             )
         }
+        Text(
+            text = "ver." + BuildConfig.VERSION_NAME,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(5.dp),
+            style = MaterialTheme.typography.subtitle2
+        )
     }
 }
 
 @Composable
-private fun CreateNewDocumentButton( onClick: () -> Unit) {
+private fun CreateNewDocumentButton(onClick: () -> Unit) {
     OutlinedButton(onClick = onClick) {
         Text(text = stringResource(id = R.string.hint45), color = Color.Black)
     }
 }
 
 @Composable
-private fun ShowSavedDocumentsButton( onClick: () -> Unit) {
+private fun ShowSavedDocumentsButton(onClick: () -> Unit) {
     OutlinedButton(onClick = onClick) {
         Text(text = stringResource(id = R.string.hint46), color = Color.Black)
     }
 }
 
 @Composable
-private fun ShowMapButton( onClick: () -> Unit) {
+private fun ShowMapButton(onClick: () -> Unit) {
     OutlinedButton(onClick = onClick) {
         Text(text = stringResource(id = R.string.hint47), color = Color.Black)
     }

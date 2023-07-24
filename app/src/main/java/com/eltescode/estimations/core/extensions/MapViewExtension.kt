@@ -46,13 +46,6 @@ fun MapView.goToPosition(location: Location?) {
     )
 }
 
-fun MapView.goToPosition(geoPoint: GeoPoint?) {
-    this.controller.animateTo(
-        GeoPoint(
-            geoPoint?.latitude ?: 0.0, geoPoint?.longitude ?: 0.0
-        ), if (this.zoomLevelDouble < 15) 15.0 else this.zoomLevelDouble, 500L
-    )
-}
 
 fun MapView.goToPosition(location: Location, zoom: Double) {
     this.controller.animateTo(location.toGeoPoint(), zoom, 500L)
@@ -66,7 +59,11 @@ fun MapView.createCustomWindow(
     geoNote: GeoNoteDisplayable, onLongInfoWindowListener: (UUID) -> Unit
 ) = CustomInfoWindow(
     id = geoNote.id,
-    title = geoNote.title + "," + " " + this.context.getString(R.string.hint44) + " " + geoNote.section,
+    title = geoNote.title + if (geoNote.section.isNotBlank()) {
+        "," + " " + this.context.getString(R.string.hint44)
+    } else {
+        ""
+    } + " " + geoNote.section,
     description = geoNote.note,
     mapView = this@createCustomWindow,
     onLongInfoWindowListener = onLongInfoWindowListener
@@ -79,15 +76,6 @@ fun MapView.removeOldMarker(geoNote: GeoNoteDisplayable) {
                 predicate.closeInfoWindow()
                 this.overlays.remove(predicate)
             }
-        }
-    }
-}
-
-fun MapView.removeALLOldMarkers() {
-    this.overlays.forEach { predicate ->
-        if (predicate is CustomMarker) {
-            predicate.closeInfoWindow()
-            this.overlays.remove(predicate)
         }
     }
 }
