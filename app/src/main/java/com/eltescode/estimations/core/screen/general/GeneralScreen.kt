@@ -1,6 +1,7 @@
 package com.eltescode.estimations.core.screen.general
 
 import android.Manifest
+import android.content.res.Configuration
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -14,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
@@ -45,6 +47,9 @@ private fun GeneralScreen(
     navigateToSectionSelectionScreen: () -> Unit,
     navigateToSavedEstimationsScreen: () -> Unit
 ) {
+    val configuration = LocalConfiguration.current
+
+
     val locationPermissionResultLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions(),
         onResult = { isGranted ->
@@ -59,7 +64,17 @@ private fun GeneralScreen(
                 brushList1.gradientBackground()
             )
     ) {
-        AppNameHeaderIcon(modifier = Modifier.align(Alignment.TopCenter))
+        AppNameHeaderIcon(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .size(
+                    if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                        160.dp
+                    } else {
+                        320.dp
+                    }
+                )
+        )
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -96,9 +111,7 @@ fun AppNameHeaderIcon(modifier: Modifier) {
         imageVector = ImageVector.vectorResource(id = R.drawable.ic_main_text),
         contentDescription = null,
         modifier = modifier
-            .width(640.dp)
-            .height(240.dp)
-            .padding(40.dp)
+            .padding(10.dp)
     )
 }
 

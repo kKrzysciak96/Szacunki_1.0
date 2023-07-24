@@ -1,8 +1,6 @@
 package com.eltescode.estimations.features.map.presentation.screen
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -11,14 +9,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.eltescode.estimations.R
+import com.eltescode.estimations.core.composable.ConfirmIconButton
 import com.eltescode.estimations.features.map.presentation.model.GeoNoteDisplayable
 import com.eltescode.estimations.ui.theme.color2
 import org.osmdroid.util.GeoPoint
@@ -175,14 +171,12 @@ private fun BaseObjectView(
     }) {
         Card {
             Box(contentAlignment = Alignment.Center) {
-                CancelButton(
-                    latitude = latitude,
-                    longitude = longitude,
+                ConfirmIconButton(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .padding(top = 5.dp, end = 5.dp)
                         .size(30.dp),
-                    onDismiss = onDismissRequest
+                    onClick = onConfirmButtonClick
                 )
 
                 Column(
@@ -223,7 +217,7 @@ private fun BaseObjectView(
                         promptDescription = promptDescription,
                         onValueChange = { description.value = it },
                         modifier = Modifier
-                            .width(300.dp)
+                            .fillMaxWidth()
                             .height(150.dp)
                     )
                     ConfirmButton(buttonText = buttonText, onClick = onConfirmButtonClick)
@@ -313,20 +307,4 @@ private fun ConfirmButton(buttonText: String, onClick: () -> Unit) {
     ) {
         Text(text = buttonText)
     }
-}
-
-@Composable
-private fun CancelButton(
-    latitude: Double,
-    longitude: Double,
-    modifier: Modifier,
-    onDismiss: (Double, Double) -> Unit
-) {
-    Icon(
-        imageVector = ImageVector.vectorResource(id = R.drawable.ic_cancel),
-        contentDescription = null,
-        modifier = modifier
-            .clip(CircleShape)
-            .clickable { onDismiss(latitude, longitude) }
-    )
 }

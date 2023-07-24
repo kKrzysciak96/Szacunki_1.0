@@ -107,7 +107,7 @@ private fun SingleRowDiameterText(diameter: String) {
     Text(
         text = diameter,
         modifier = Modifier
-            .width(70.dp)
+            .width(80.dp)
             .padding(4.dp),
         textAlign = TextAlign.Center,
         style = MaterialTheme.typography.body1
