@@ -32,7 +32,10 @@ fun MemoDialog(
         Card {
             Box(contentAlignment = Alignment.Center) {
                 ConfirmButton(
-                    modifier = Modifier.align(Alignment.TopEnd),
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(top = 10.dp, end = 10.dp)
+                        .size(30.dp),
                     onClick = onDismissRequest
                 )
                 Column(
@@ -72,13 +75,11 @@ fun MemoDialog(
 }
 
 @Composable
-fun ConfirmButton(modifier: Modifier, onClick: () -> Unit) {
+private fun ConfirmButton(modifier: Modifier, onClick: () -> Unit) {
     Icon(
         imageVector = ImageVector.vectorResource(id = R.drawable.ic_confimation),
         contentDescription = null,
         modifier = modifier
-            .padding(top = 10.dp, end = 10.dp)
-            .size(30.dp)
             .clip(CircleShape)
             .background(color2)
             .clickable { onClick() }

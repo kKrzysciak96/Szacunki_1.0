@@ -4,7 +4,6 @@ import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -60,16 +59,7 @@ private fun GeneralScreen(
                 brushList1.gradientBackground()
             )
     ) {
-        Icon(
-            imageVector = ImageVector.vectorResource(id = R.drawable.ic_main_text),
-            contentDescription = null,
-            modifier = Modifier
-                .align(
-                    Alignment.TopCenter
-                )
-                .padding(40.dp)
-                .clickable { }
-        )
+        AppNameHeaderIcon(modifier = Modifier.align(Alignment.TopCenter))
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -98,6 +88,18 @@ private fun GeneralScreen(
             style = MaterialTheme.typography.subtitle2
         )
     }
+}
+
+@Composable
+fun AppNameHeaderIcon(modifier: Modifier) {
+    Icon(
+        imageVector = ImageVector.vectorResource(id = R.drawable.ic_main_text),
+        contentDescription = null,
+        modifier = modifier
+            .width(640.dp)
+            .height(240.dp)
+            .padding(40.dp)
+    )
 }
 
 @Composable
