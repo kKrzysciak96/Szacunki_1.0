@@ -25,7 +25,7 @@ import com.eltescode.estimations.core.extensions.getBaseNameList
 import com.eltescode.estimations.core.extensions.gradientBackground
 import com.eltescode.estimations.destinations.EstimationScreenDestination
 import com.eltescode.estimations.ui.theme.brushList1
-import com.eltescode.estimations.ui.theme.color4
+import com.eltescode.estimations.ui.theme.colorLightTeal
 import com.eltescode.estimations.R
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -97,7 +97,7 @@ private fun PredefinedTreesTable(context: Context, treeList: MutableState<List<S
                 Box(contentAlignment = Alignment.Center,
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(color = if (isChecked.value) color4 else Color.White)
+                        .background(color = if (isChecked.value) colorLightTeal else Color.White)
                         .clickable {
                             isChecked.value = !isChecked.value
                             if (isChecked.value) {

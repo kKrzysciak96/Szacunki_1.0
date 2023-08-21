@@ -22,14 +22,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.eltescode.estimations.R
 import com.eltescode.estimations.core.extensions.createEstimationToRemoveTree
 import com.eltescode.estimations.core.extensions.showLongHint
 import com.eltescode.estimations.core.extensions.trimToDisplay
 import com.eltescode.estimations.features.estimation.presentation.model.EstimationDisplayable
 import com.eltescode.estimations.features.estimation.presentation.model.TreeDisplayable
-import com.eltescode.estimations.ui.theme.color2
-import com.eltescode.estimations.ui.theme.color3
-import com.eltescode.estimations.R
+import com.eltescode.estimations.ui.theme.colorDarkGreen
+import com.eltescode.estimations.ui.theme.colorLightGreen
+import com.eltescode.estimations.ui.theme.colorWhite
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -50,7 +51,7 @@ fun TreeNamesTopBar(
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(color3),
+                .background(colorLightGreen),
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically,
             state = listState,
@@ -92,7 +93,7 @@ fun TreeNamesItem(
             .clip(RoundedCornerShape(2.dp))
             .height(60.dp)
             .width(120.dp)
-            .background(color = if (treeIndexState.value == itemIndex) color2 else color3)
+            .background(color = if (treeIndexState.value == itemIndex) colorDarkGreen else colorLightGreen)
             .combinedClickable(
                 onClick = {
                     if (itemIndex != 0) {
@@ -115,7 +116,8 @@ fun TreeNamesItem(
             text = textToDisplay,
             style = MaterialTheme.typography.h6,
             modifier = Modifier.padding(5.dp),
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            color = colorWhite
         )
 
         if (treeIndexState.value == itemIndex) {
@@ -169,16 +171,17 @@ private fun IconAddTreesItem(treeNameState: MutableState<Boolean>) {
             .width(70.dp)
     ) {
         Card(
-            border = BorderStroke(2.dp, Color.Black),
+            border = BorderStroke(2.dp, colorWhite),
             elevation = 4.dp
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_plus),
                 contentDescription = null,
+                tint = colorWhite,
                 modifier = Modifier
                     .height(40.dp)
                     .width(40.dp)
-                    .background(color2)
+                    .background(colorDarkGreen)
                     .pointerInput(Unit) {
                         detectTapGestures(
                             onLongPress = { treeNameState.value = true },

@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.eltescode.estimations.ui.theme.color2
+import com.eltescode.estimations.ui.theme.colorDarkGreen
 import com.eltescode.estimations.R
 
 @Composable
@@ -23,7 +23,7 @@ fun SavedEstimationsTopBar() {
         modifier = Modifier
             .wrapContentSize()
             .fillMaxWidth()
-            .background(color2),
+            .background(colorDarkGreen),
         contentAlignment = Alignment.Center
     ) {
         Text(

@@ -9,20 +9,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.eltescode.estimations.ui.theme.color2
+import com.eltescode.estimations.ui.theme.colorDarkGreen
 import com.eltescode.estimations.R
+import com.eltescode.estimations.ui.theme.colorWhite
 
 @Composable
 fun TitleParametersRow() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(color2),
+            .background(colorDarkGreen),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = stringResource(id = R.string.hint11))
-        Text(text = stringResource(id = R.string.hint12))
-        Text(text = stringResource(id = R.string.hint13))
+        Text(text = stringResource(id = R.string.hint11), color = colorWhite)
+        Text(text = stringResource(id = R.string.hint12), color = colorWhite)
+        Text(text = stringResource(id = R.string.hint13), color = colorWhite)
     }
 }

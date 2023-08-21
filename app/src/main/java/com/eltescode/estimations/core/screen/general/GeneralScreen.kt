@@ -26,6 +26,7 @@ import com.eltescode.estimations.destinations.MapScreenDestination
 import com.eltescode.estimations.destinations.SavedEstimationsScreenDestination
 import com.eltescode.estimations.destinations.SectionSelectionScreenDestination
 import com.eltescode.estimations.ui.theme.brushList1
+import com.eltescode.estimations.ui.theme.colorBlack
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -110,8 +111,9 @@ fun AppNameHeaderIcon(modifier: Modifier) {
     Icon(
         imageVector = ImageVector.vectorResource(id = R.drawable.ic_main_text),
         contentDescription = null,
+        tint = colorBlack,
         modifier = modifier
-            .padding(10.dp)
+            .padding(top = 0.dp, bottom = 10.dp)
     )
 }
 
@@ -132,7 +134,7 @@ private fun ShowSavedDocumentsButton(onClick: () -> Unit) {
 @Composable
 private fun ShowMapButton(onClick: () -> Unit) {
     OutlinedButton(onClick = onClick) {
-        Text(text = stringResource(id = R.string.hint47), color = Color.Black)
+        Text(text = stringResource(id = R.string.hint47), color = colorBlack)
     }
 }
 

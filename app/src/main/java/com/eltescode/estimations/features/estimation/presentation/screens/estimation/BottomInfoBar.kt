@@ -28,7 +28,7 @@ import com.eltescode.estimations.core.extensions.toLocalDate
 import com.eltescode.estimations.core.extensions.trimToDisplaySectionNumber
 import com.eltescode.estimations.features.estimation.presentation.model.EstimationDisplayable
 import com.eltescode.estimations.features.pdf.creator.PdfGenerator.generatePdf
-import com.eltescode.estimations.ui.theme.color2
+import com.eltescode.estimations.ui.theme.colorDarkGreen
 import com.eltescode.estimations.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -47,13 +47,13 @@ fun BottomInfoBar(
     BottomAppBar(
         modifier = Modifier
             .fillMaxWidth()
-            .height(70.dp), backgroundColor = color2
+            .height(70.dp), backgroundColor = colorDarkGreen
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(70.dp)
-                .background(color = color2),
+                .background(color = colorDarkGreen),
             contentAlignment = Alignment.Center
         ) {
             Row(
@@ -110,7 +110,7 @@ private fun PdfIconButton(key: EstimationDisplayable, onLongPress: () -> Unit, o
             .padding(start = 15.dp)
             .height(40.dp)
             .width(40.dp)
-            .background(color2)
+            .background(colorDarkGreen)
             .pointerInput(key) {
                 detectTapGestures(onLongPress = { onLongPress() }, onTap = { onTap() })
             })
@@ -198,7 +198,7 @@ private fun MemoIconButton(onLongPress: () -> Unit, onTap: () -> Unit) {
             .padding(end = 15.dp)
             .height(40.dp)
             .width(40.dp)
-            .background(color2)
+            .background(colorDarkGreen)
             .pointerInput(Unit) {
                 detectTapGestures(onLongPress = { onLongPress() }, onTap = { onTap() })
             })

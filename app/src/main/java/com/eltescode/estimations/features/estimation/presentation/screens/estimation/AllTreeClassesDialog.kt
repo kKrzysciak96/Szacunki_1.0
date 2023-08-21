@@ -17,7 +17,7 @@ import androidx.compose.ui.window.Dialog
 import com.eltescode.estimations.R
 import com.eltescode.estimations.core.composable.ConfirmIconButton
 import com.eltescode.estimations.features.estimation.presentation.model.EstimationDisplayable
-import com.eltescode.estimations.ui.theme.color2
+import com.eltescode.estimations.ui.theme.colorDarkGreen
 
 @Composable
 fun AllTreeClassesDialog(
@@ -131,7 +131,7 @@ private fun AllClassesTitleRow() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(color2),
+            .background(colorDarkGreen),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {

@@ -37,7 +37,7 @@ import coil.imageLoader
 import coil.memory.MemoryCache
 import coil.request.ImageRequest
 import com.eltescode.estimations.core.extensions.shareFile
-import com.eltescode.estimations.ui.theme.color2
+import com.eltescode.estimations.ui.theme.colorDarkGreen
 import com.eltescode.estimations.R
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.coroutines.CoroutineScope
@@ -233,7 +233,7 @@ fun PreviousPageButton(
         .padding(10.dp),
         shape = RoundedCornerShape(15.dp),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = color2, contentColor = Color.White
+            backgroundColor = colorDarkGreen, contentColor = Color.White
         ),
         onClick = {
             scrollScope.launch {
@@ -280,7 +280,7 @@ fun NextPageButton(
         .padding(10.dp),
         shape = RoundedCornerShape(15.dp),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = color2, contentColor = Color.White
+            backgroundColor = colorDarkGreen, contentColor = Color.White
         ),
         onClick = {
             resetView(scale, offset)
@@ -298,7 +298,9 @@ fun ShareButton(file: File, context: Context, modifier: Modifier) {
                 context, "com.eltescode.estimations.fileprovider", file
             )
             context.shareFile(uri)
-        }, backgroundColor = color2, modifier = modifier.padding(end = 20.dp, bottom = 80.dp)
+        },
+        backgroundColor = colorDarkGreen,
+        modifier = modifier.padding(end = 20.dp, bottom = 80.dp)
     ) {
         Icon(
             painter = painterResource(id = android.R.drawable.ic_menu_share),

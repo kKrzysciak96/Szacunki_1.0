@@ -6,7 +6,7 @@ import com.eltescode.estimations.core.extensions.prepareDateToDisplay
 import com.eltescode.estimations.core.extensions.toLocalDateTime
 import com.eltescode.estimations.features.estimation.presentation.model.EstimationDisplayable
 import com.eltescode.estimations.features.estimation.presentation.model.TreeDisplayable
-import com.eltescode.estimations.ui.theme.color2
+import com.eltescode.estimations.ui.theme.colorDarkGreen
 import com.eltescode.estimations.R
 import com.itextpdf.io.font.FontProgramFactory
 import com.itextpdf.io.font.PdfEncodings
@@ -108,7 +108,7 @@ object PdfGenerator {
         treeDisplayable: TreeDisplayable,
         sectionNumber: String
     ) {
-        val colorGreen = DeviceRgb(color2.red, color2.green, color2.blue)
+        val colorGreen = DeviceRgb(colorDarkGreen.red, colorDarkGreen.green, colorDarkGreen.blue)
         val title =
             treeDisplayable.name.createTitle(context = context, sectionNumber = sectionNumber)
         addTreeTitle(layoutDocument, title)

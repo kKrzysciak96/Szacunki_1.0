@@ -13,7 +13,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.eltescode.estimations.features.map.presentation.custom.CustomMarker
-import com.eltescode.estimations.ui.theme.color2
+import com.eltescode.estimations.ui.theme.colorDarkGreen
 import com.eltescode.estimations.R
 import org.osmdroid.views.MapView
 import java.util.*
@@ -62,7 +62,7 @@ fun MarkerDeleteDialog(
                         }
                         OutlinedButton(modifier = Modifier.padding(10.dp),
                             shape = RoundedCornerShape(30.dp),
-                            colors = ButtonDefaults.buttonColors(backgroundColor = color2),
+                            colors = ButtonDefaults.buttonColors(backgroundColor = colorDarkGreen),
                             border = BorderStroke(width = 1.dp, color = Color.DarkGray),
                             onClick = { onDismiss() }) {
                             Text(

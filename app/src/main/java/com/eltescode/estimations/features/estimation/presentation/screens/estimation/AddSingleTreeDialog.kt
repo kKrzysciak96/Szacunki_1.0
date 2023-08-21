@@ -24,8 +24,8 @@ import androidx.compose.ui.window.Dialog
 import com.eltescode.estimations.core.extensions.createEstimationToUpdateTreeNames
 import com.eltescode.estimations.core.extensions.getBaseNameList
 import com.eltescode.estimations.features.estimation.presentation.model.EstimationDisplayable
-import com.eltescode.estimations.ui.theme.color1
-import com.eltescode.estimations.ui.theme.color2
+import com.eltescode.estimations.ui.theme.colorGreen
+import com.eltescode.estimations.ui.theme.colorDarkGreen
 import com.eltescode.estimations.R
 
 @Composable
@@ -63,7 +63,7 @@ fun AddSingleTreeDialog(
                         onValueChange = { newTreeName.value = it },
                         label = { Text(text = stringResource(id = R.string.hint2)) },
                         colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = color2, focusedLabelColor = color2
+                            focusedBorderColor = colorDarkGreen, focusedLabelColor = colorDarkGreen
                         )
                     )
                     OutlinedButton(
@@ -139,7 +139,7 @@ private fun ChooseTree(
                 Box(contentAlignment = Alignment.Center,
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(color = if (isChecked.value) color1 else Color.White)
+                        .background(color = if (isChecked.value) colorGreen else Color.White)
                         .clickable {
                             val newEstimation = estimation.createEstimationToUpdateTreeNames(
                                 context = context,

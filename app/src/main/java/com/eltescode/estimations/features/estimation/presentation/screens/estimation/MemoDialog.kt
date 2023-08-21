@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.eltescode.estimations.core.extensions.createEstimationToUpdateMemo
 import com.eltescode.estimations.features.estimation.presentation.model.EstimationDisplayable
-import com.eltescode.estimations.ui.theme.color2
+import com.eltescode.estimations.ui.theme.colorDarkGreen
 import com.eltescode.estimations.R
 import com.eltescode.estimations.core.composable.ConfirmIconButton
 
@@ -58,8 +58,8 @@ fun MemoDialog(
                         modifier = Modifier.size(300.dp),
                         label = { Text(text = stringResource(id = R.string.hint9)) },
                         colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = color2,
-                            focusedLabelColor = color2
+                            focusedBorderColor = colorDarkGreen,
+                            focusedLabelColor = colorDarkGreen
                         )
                     )
                 }

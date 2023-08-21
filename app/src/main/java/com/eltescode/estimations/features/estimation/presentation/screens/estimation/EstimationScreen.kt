@@ -98,7 +98,6 @@ private fun EstimationScreen(
 
 ) {
     Scaffold(topBar = {
-
         TreeNamesTopBar(
             estimation = estimation,
             updateEstimation = updateEstimation,

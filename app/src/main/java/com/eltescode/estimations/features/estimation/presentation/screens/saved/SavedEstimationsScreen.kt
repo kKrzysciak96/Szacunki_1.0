@@ -29,7 +29,7 @@ import com.eltescode.estimations.destinations.EstimationScreenDestination
 import com.eltescode.estimations.destinations.PdfViewerScreenDestination
 import com.eltescode.estimations.features.estimation.presentation.model.EstimationDisplayable
 import com.eltescode.estimations.features.pdf.creator.PdfGenerator.generatePdf
-import com.eltescode.estimations.ui.theme.color3
+import com.eltescode.estimations.ui.theme.colorLightGreen
 import com.eltescode.estimations.R
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -182,7 +182,7 @@ fun EstimationRow(
     ) {
         Card(
             modifier = Modifier.padding(10.dp),
-            backgroundColor = color3,
+            backgroundColor = colorLightGreen,
             elevation = 10.dp,
             shape = RoundedCornerShape(10.dp),
             border = BorderStroke(1.dp, Color.Black)

@@ -15,7 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eltescode.estimations.core.extensions.deleteSavedPdfs
-import com.eltescode.estimations.ui.theme.color2
+import com.eltescode.estimations.ui.theme.colorDarkGreen
 import com.eltescode.estimations.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,7 +31,7 @@ fun SavedEstimationsBottomBar(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     BottomAppBar(
-        modifier = Modifier.fillMaxWidth(), backgroundColor = color2
+        modifier = Modifier.fillMaxWidth(), backgroundColor = colorDarkGreen
     ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Row(

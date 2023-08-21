@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.eltescode.estimations.core.extensions.gradientBackground
 import com.eltescode.estimations.destinations.TreeSelectionScreenDestination
 import com.eltescode.estimations.ui.theme.brushList1
-import com.eltescode.estimations.ui.theme.color2
+import com.eltescode.estimations.ui.theme.colorDarkGreen
 import com.eltescode.estimations.R
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -56,8 +56,8 @@ fun SectionSelectionScreen(
                 onValueChange = { text.value = it },
                 label = { Text(text = stringResource(id = R.string.hint22)) },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = color2,
-                    focusedLabelColor = color2
+                    focusedBorderColor = colorDarkGreen,
+                    focusedLabelColor = colorDarkGreen
                 ),
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions(

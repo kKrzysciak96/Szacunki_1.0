@@ -11,8 +11,9 @@ import com.eltescode.estimations.core.extensions.createEstimationToUpdateQuantit
 import com.eltescode.estimations.core.extensions.performAddition
 import com.eltescode.estimations.core.extensions.performSubtraction
 import com.eltescode.estimations.features.estimation.presentation.model.EstimationDisplayable
-import com.eltescode.estimations.ui.theme.color1
+import com.eltescode.estimations.ui.theme.colorGreen
 import com.eltescode.estimations.R
+import com.eltescode.estimations.ui.theme.colorWhite
 
 @Composable
 fun CustomIdButton(
@@ -48,7 +49,10 @@ fun CustomIdButton(
                 )
             updateEstimation(newEstimation)
         },
-        colors = ButtonDefaults.buttonColors(backgroundColor = color1),
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = colorGreen,
+            contentColor = colorWhite
+        ),
         modifier = modifier
     ) {
         Icon(

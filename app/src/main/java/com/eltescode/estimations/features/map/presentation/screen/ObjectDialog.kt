@@ -16,7 +16,7 @@ import androidx.compose.ui.window.Dialog
 import com.eltescode.estimations.R
 import com.eltescode.estimations.core.composable.ConfirmIconButton
 import com.eltescode.estimations.features.map.presentation.model.GeoNoteDisplayable
-import com.eltescode.estimations.ui.theme.color2
+import com.eltescode.estimations.ui.theme.colorDarkGreen
 import org.osmdroid.util.GeoPoint
 import java.util.*
 
@@ -251,7 +251,7 @@ private fun TitleTextField(
         modifier = modifier,
         label = { Text(text = promptTitle) },
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = color2, focusedLabelColor = color2
+            focusedBorderColor = colorDarkGreen, focusedLabelColor = colorDarkGreen
         ),
         singleLine = true
     )
@@ -270,7 +270,7 @@ private fun SectionTextField(
         modifier = modifier,
         label = { Text(text = promptSection) },
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = color2, focusedLabelColor = color2
+            focusedBorderColor = colorDarkGreen, focusedLabelColor = colorDarkGreen
         ),
         singleLine = true
     )
@@ -289,7 +289,7 @@ private fun DescriptionTextField(
         modifier = modifier,
         label = { Text(text = promptDescription) },
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = color2, focusedLabelColor = color2
+            focusedBorderColor = colorDarkGreen, focusedLabelColor = colorDarkGreen
         )
     )
 }

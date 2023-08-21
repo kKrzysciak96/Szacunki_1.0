@@ -10,16 +10,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import com.eltescode.estimations.R
-import com.eltescode.estimations.ui.theme.color2
+import com.eltescode.estimations.ui.theme.colorDarkGreen
+import com.eltescode.estimations.ui.theme.colorWhite
 
 @Composable
 fun ConfirmIconButton(modifier: Modifier, onClick: () -> Unit) {
     Icon(
         imageVector = ImageVector.vectorResource(id = R.drawable.ic_confimation),
         contentDescription = null,
+        tint = colorWhite,
         modifier = modifier
             .clip(CircleShape)
-            .background(color2)
+            .background(colorDarkGreen)
             .clickable { onClick() }
     )
 }
